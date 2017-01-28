@@ -1,3 +1,6 @@
+" to normalize line endings in vim, try the following:
+" %s/^M$//g
+" on a mac, that's Ctrl+V,M for ^M symbol
 set nocompatible                " vi compatible is LAME
 set ai                          " set auto-indenting on for programming
 set vb                          " turn on the "visual bell" - which is much quieter than the "audio blink"
@@ -110,9 +113,23 @@ nnoremap gn :new +setl\ buftype=nofile
 "————————————————————————————————————————————————————————————————————————————
 " Plugins (using vundle)
 "————————————————————————————————————————————————————————————————————————————
-set rtp+=~/vimfiles/bundle/Vundle.vim/
-let path='~/vimfiles/bundle'
-call vundle#begin(path)
+if has("unix")
+    let s:uname = system("uname -s")
+        if s:uname == "Darwin\n"
+        " Do Mac stuff here
+
+		set rtp+=~/.vim/bundle/Vundle.vim/
+		call vundle#begin()
+
+        endif
+elseif has("win32")
+	
+	" beloved windows
+	set rtp+=~/vimfiles/bundle/Vundle.vim/
+	let path='~/vimfiles/bundle'
+	call vundle#begin(path)
+endif
+
 
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'scrooloose/nerdtree'
