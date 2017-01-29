@@ -111,20 +111,17 @@ nnoremap gn :new +setl\ buftype=nofile
 
 
 "————————————————————————————————————————————————————————————————————————————
-" Plugins (using vundle)
+" Plugins (using vundle) may have different save paths 
 "————————————————————————————————————————————————————————————————————————————
-if has("unix")
-    let s:uname = system("uname -s")
-        if s:uname == "Darwin\n"
-        " Do Mac stuff here
+let s:uname = system("uname -s")
+if has("unix") && s:uname == "Darwin\n"
+	" Do Mac stuff here
 
-		set rtp+=~/.vim/bundle/Vundle.vim/
-		call vundle#begin()
-
-        endif
+	set rtp+=~/.vim/bundle/Vundle.vim/
+	call vundle#begin()
 elseif has("win32")
-	
 	" beloved windows
+	
 	set rtp+=~/vimfiles/bundle/Vundle.vim/
 	let path='~/vimfiles/bundle'
 	call vundle#begin(path)
@@ -183,9 +180,10 @@ let g:rainbow_active = 1
 
 
 "————————————————————————————————————————————————————————————————————————————
-" conflicting keymaps, the following is Visual studio vim's equivalent
+" vsvim (visual studio) and terminal keymaps
 "————————————————————————————————————————————————————————————————————————————
-if &term == 'win32'
+" if this is a terminal
+if &term == 'win32' || &term == 'xterm-256color'
 	" this remap is for vim, and has to be set here. otherwise visual studio
 	" will complain
 	nnoremap go viw"0p
