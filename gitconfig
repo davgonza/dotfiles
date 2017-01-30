@@ -1,0 +1,102 @@
+[alias]
+    st = status
+    co = checkout
+    ci = commit
+    cl = clone
+    rc = rebase --continue
+    mt = mergetool
+    br = branch
+    r = reset
+    persh = push
+    lag = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative ..origin/master
+    la = "!{ git config -l | grep "alias" | cut -c 7-; }"
+    lv = "!f() { \
+        defaultCommitCount=-4; \
+        if [ $# -eq 0 ]; then git log --pretty=format:'%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]' --decorate --numstat \"$defaultCommitCount\"; else git log --pretty=format:'%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]' --decorate --numstat -\"$1\"; fi\
+    }; f"
+    ls = "!f() { \
+        defaultCommitCount=-4; \
+        if [ $# -eq 0 ]; then git log --pretty=format:'%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]' --date=relative --decorate \"$defaultCommitCount\"; else git log --pretty=format:'%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]' --date=relative --decorate -\"$1\"; fi\
+    }; f"
+    og = "!{ localBranch=`git rev-parse --abbrev-ref HEAD`; git diff master...$localBranch --name-status; } ;"
+    mc = "!{ localBranch=`git rev-parse --abbrev-ref HEAD`; git diff master...$localBranch; } ;"
+    tree = log --stat --since='1 Day Ago' --graph --pretty=format:'%C(yellow)%h%Creset ------------%C(red)%d%Creset %C(magenta)(%s) %C(dim green)(%cr) %C(cyan)<%an>%Creset' --abbrev-commit --date=relative -10
+    atomicbomb = "!{ git reset --hard; git clean -f; } ;"
+    cp = "!{ git add .; git commit --amend; } ;"
+    sa = stash save -u
+    rem = clean -f
+    whoops = reset --soft HEAD~1
+    save = "!f() { git add .; git commit -m \"$1\"; }; f"
+    fo = fetch origin
+    q = checkout master
+    snap = reset --hard HEAD~1
+    ld = "!f() { \
+        git log --graph --pretty=format:'%C(yellow)%h%Creset -%C(red)%d%Creset %C(white)(%s) %C(dim green)(%cr) %C(cyan)<%an>%Creset' --abbrev-commit --date=relative -11 | while read line ; \
+        do echo \"$line\"; \
+        hash=$(echo \"$line\" | cut -c 8- | cut -c -7); \
+        CYAN='\\033[1;36m'; \
+        NC='\\033[0m'; \
+        \
+        echo -e -n "${CYAN}"; \
+        echo $(git log -1 --format="%b" "$hash") | grep -Eo 'http://usphabricator.*'; \
+        echo -e "${NC}"; \
+        done; \
+        }; f"
+    fl = "!f() { git fo; git lag; }; f"
+    p = stash apply --index
+    sup = branch -u master
+    f = fetch
+    g = git
+    qm = "!f() { git add .; git commit -m \"QUICKSAVE\"; }; f"
+    us = "branch --set-upstream-to origin/master"
+
+[color]
+    ui = true
+    diff = auto
+    status = auto
+    interactive = auto
+    ui = true
+    pager = true
+[color "status"]
+    header = normal 
+    added = magenta yellow
+    updated = green reverse
+    changed = red reverse
+    untracked = magenta bold
+    nobranch = red white bold
+
+[color "branch"]
+    current = green
+    local = normal
+    remote = red
+    upstream = bold blue
+    plain = normal
+
+[help]
+    autocorrect = 1
+[branch]
+    autosetuprebase = always
+[core]
+    fscache = on
+    preloadindex = on
+    longpaths = true
+    editor = "C:/src/vim/vim74/vim.exe"
+	excludesfile = ~/.gitignore
+[gc]
+    auto = 256
+[push]
+    default = simple
+[diff]
+    tool = vsdiffmerge
+    guitool = vsdiffmerge
+[difftool]
+    prompt = false
+[difftool "vsdiffmerge"]
+    cmd = vsdiffmerge.exe $LOCAL $REMOTE //t
+    keepbackup = false
+    trustexitcode = true
+[merge]
+	tool = vimdiff
+	conflictstyle = diff3
+[mergetool]
+	prompt = false
