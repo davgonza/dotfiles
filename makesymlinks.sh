@@ -4,7 +4,7 @@
 # This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
 ############################
 # 1. first rename dotfile to remove dot, and place inside dotfiles directory (the one you cloned)
-# 2. then run this script
+# 2. run this script
 # 3. there should be a symlink (copy) of the desired dotfile in your $HOME directory
 ############################
 
