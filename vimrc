@@ -114,11 +114,18 @@ nnoremap gn :new +setl\ buftype=nofile
 " Plugins (using vundle) may have different save paths 
 "————————————————————————————————————————————————————————————————————————————
 let s:uname = system("uname -s")
-if has("unix") && s:uname == "Darwin\n"
-	" Do Mac stuff here
+if has("unix")
+	if s:uname == "Darwin\n"
+		" Do Mac stuff here
 
-	set rtp+=~/.vim/bundle/Vundle.vim/
-	call vundle#begin()
+		set rtp+=~/.vim/bundle/Vundle.vim/
+		call vundle#begin()
+	elseif s:uname == "Linux\n"
+		" Do Linux stuff here
+
+		set rtp+=~/.vim/bundle/Vundle.vim/
+		call vundle#begin()
+	endif
 elseif has("win32")
 	" beloved windows
 	

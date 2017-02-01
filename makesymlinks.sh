@@ -28,8 +28,9 @@ echo "...done"
 
 # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
 for file in $files; do
-    echo "Moving any existing dotfiles from ~ to $olddir"
-    mv ~/.$file ~/dotfiles_old/
+    # TODO: if the "old" dotfile exists in ~, THEN move it to ~/olddir
+    # echo "Moving any existing dotfiles from ~ to $olddir"
+    # mv ~/.$file ~/dotfiles_old/
     echo "Creating symlink to $file in home directory."
     
     windows() { [[ -n "$WINDIR" ]]; }
@@ -39,6 +40,6 @@ for file in $files; do
 		cmd <<< "mklink /H \"%HOME%/.$file\" \"${file%/}\"" > /dev/null
 	else
 		# else create "symlink"
-		ln -s "$target" "$link"
+		ln -s $dir/$file ~/.$file
 	fi
 done
