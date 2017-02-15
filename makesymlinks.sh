@@ -44,3 +44,4 @@ for file in $files; do
 		ln -s $dir/$file ~/.$file
 	fi
 done
+read -p "Press any key to continue... " -n1 -s

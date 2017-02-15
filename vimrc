@@ -23,36 +23,36 @@ set fileencoding=utf-8
 set fileencodings=ucs-bom,utf8,prc
 set statusline=%<%F\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 let mapleader = ","
-let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
-let g:ctrlp_by_filename = 1
-let g:ctrlp_use_caching = 0
+let &showbreak = ' ◄◄ '
+set wrap
+set cpo=n
+
 syntax on                       " turn syntax highlighting on by default
 filetype off
 behave mswin
-
 
 nnoremap s :w<cr>
 nnoremap <space> :
 
 nnoremap <leader>e :nohl<cr> :echo<cr>
-nnoremap <leader>r :w<cr> :so %<cr> :nohl<cr> :echo<cr>
 nnoremap <leader>f :b#<cr>
 nnoremap <leader>m :CtrlPMRUFiles<cr>
 nnoremap <leader>v :CtrlPBuffer<cr>
 nnoremap <leader>x :NERDTreeFind<cr>
-nnoremap <leader>s :CtrlP C:\SRC\Admin\JW.Admin.Server\<cr>
-nnoremap <leader>c :CtrlP C:\SRC\Admin\JW.Admin.Client\<cr>
+nnoremap <leader>s :CtrlP C:\\SRC\\Admin\\JW.Admin.Server<cr>
+nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-h> <C-w>h
-nnoremap <C-l> <C-w>l
-nnoremap L $
-nnoremap H ^
-onoremap L $
-onoremap H ^
-vnoremap L $
-vnoremap H ^
+" only alt maps
+nnoremap <M-j> <C-w>j
+nnoremap <M-k> <C-w>k
+nnoremap <M-h> <C-w>h
+nnoremap <M-l> <C-w>l
+nnoremap L g$
+onoremap L g$
+vnoremap L g$
+nnoremap H g^
+onoremap H g^
+vnoremap H g^
 nnoremap co "_ciw
 nnoremap vo viw
 nnoremap do diw
@@ -62,25 +62,26 @@ onoremap 8 iW
 onoremap q i"
 onoremap s i'
 onoremap m i(
+vnoremap m i(
+" nnoremap vm %vi(
+" nnoremap cm %ci(
+nnoremap <cr> f(l
 
 vnoremap 8 iW
 vnoremap q i"
 vnoremap s i'
-vnoremap m i(
 nnoremap r @a
 nnoremap Y y$
 nnoremap xx dd
 nnoremap K i<CR><Esc>l
-nnoremap / /\c
 
 " The Silver Searcher
 if executable('ag')
-  " Use ag over grep
-  set grepprg=ag\ --nogroup\ --nocolor
+  " set grepprg=ag\ --nogroup\ --nocolor
 
 endif
-
-
+let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
+" grep "StoredProcedure" "C:/src/Admin/JW.Admin.Server/JW.Admin.Field.ServiceInterface/"
 
 
 
@@ -100,7 +101,8 @@ nnoremap <silent>gw[ :exe "10winc <"<CR>
 nnoremap <silent>gw= :exe "10winc +"<CR>
 nnoremap <silent>gw] :exe "10winc -"<CR>
 nnoremap gqf :e $MYVIMRC<cr>
-nnoremap gp fpvi(p
+nnoremap gqr :w<cr> :so %<cr> :nohl<cr> :echo<cr>
+nnoremap gm vi(p
 nnoremap gs vi'p
 nnoremap gq vi"p
 nnoremap gr @:
@@ -110,8 +112,11 @@ nnoremap gn :new +setl\ buftype=nofile
 
 
 
+
+
+
 "————————————————————————————————————————————————————————————————————————————
-" Plugins (using vundle) may have different save paths 
+" Plugins (using vundle) will have different save paths 
 "————————————————————————————————————————————————————————————————————————————
 let s:uname = system("uname -s")
 if has("unix")
@@ -149,9 +154,11 @@ filetype plugin indent on    		" required
 
 
 
+
+
 "————————————————————————————————————————————————————————————————————————————
-" OVERWRITES DEFAULT COPY + PASTE BEHAVIOUR
-"————————————————————————————————————————————————————————————————————————————
+" OVEWRITES DEFAULT COPY + PASTE BEHAVIOUR
+"———————————————————————————————————————————————————————————————————————————
 nnoremap x "_d
 vnoremap x "_d
 nnoremap X "_D
@@ -182,7 +189,10 @@ map <leader>y "*y
 set number
 hi Visual  ctermfg=Black ctermbg=white gui=none
 let g:rainbow_active = 1
-
+let loaded_matchparen = 1
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
+let g:ctrlp_by_filename = 1
+let g:ctrlp_use_caching = 0
 
 
 
@@ -191,11 +201,71 @@ let g:rainbow_active = 1
 "————————————————————————————————————————————————————————————————————————————
 " if this is a terminal
 if &term == 'win32' || &term == 'xterm-256color'
-	" this remap is for vim, and has to be set here. otherwise visual studio
-	" will complain
-	nnoremap go viw"0p
+	" used to be nnoremap go viw"0p
+	nnoremap go viwp
+
+	" fixes the problem when jumping up a 'count', with relative line
+	" numbers on. if a v:count was not specified, then 'gj', move up visually a
+	" line. else, apply the v:count to jump up real lines
+	" interestingly, this isn't a problem in VsVim?
+	nnoremap <expr> j v:count ? 'j' : 'gj'
+	nnoremap <expr> k v:count ? 'k' : 'gk'
+	nnoremap / /\\c
 else
 	" visual studio
 	nnoremap go viwp
-endif
+	nnoremap / /\c
+endif     
 
+
+
+
+
+let s:activatedh = 0 
+
+" toggle chars
+function! ToggleChars()
+    if s:activatedh == 0
+        let s:activatedh = 1 
+
+		set listchars=tab:▸\ ,space:·	
+		" listchars defined above
+		set list
+		highlight ExtraWhitespace ctermbg=red guibg=red
+		match ExtraWhitespace /\s\+$/
+    else
+        let s:activatedh = 0 
+
+		set nolist
+        match none
+    endif
+endfunction
+
+
+function! CurrentProject()
+	" for windows machines, path is like C:\src\path, with backslashes
+	let f_path = split(expand('%:p:h'), '\')
+	call remove(f_path, 5, len(f_path)-1)
+	let something = join(f_path, "/")
+
+	echo "current project " something
+endfunction
+
+nnoremap gfp :call CustomGrep("<C-R><C-W>")
+
+function! CustomGrep(regex)
+	let f_path = split(expand('%:p:h'), '\')
+	call remove(f_path, 5, len(f_path)-1)
+	let something = join(f_path, "/")
+
+	" basically, surround with quotes, to execute later
+	grep '"' . a:regex . '" ' . '"' . something . '"'
+
+
+endfunction
+
+
+
+
+" (I'm mostly writing this because I'm probably going to want to do this again, and I want to make sure I remember how to.)
+"
