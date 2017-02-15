@@ -2,19 +2,19 @@
 ############################
 # .make.sh
 # This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
-############################
-# 1. first rename dotfile to remove dot, and place inside dotfiles directory (the one you cloned)
+# 1. first rename dotfile (remove dot), and place inside "dotfiles" folder (the one you cloned)
 # 2. run this script
-# 3. there should be a symlink (copy) of the desired dotfile in your $HOME directory
+# 3. symlinks created for all specified dotfiles
+# 4. IMPORTANT: this script doesn't do it, so you have to manually clean out "dotfiles_old" folder after every rerun
 ############################
 
-########## Variables
+#################### Variables
 
 dir=~/dotfiles                    					  # dotfiles directory
 olddir=~/dotfiles_old             					  # old dotfiles backup directory
 files="bash_aliases bashrc gitignore bash_profile gitconfig vimrc"    	  # list of files/folders to symlink in homedir
 
-##########
+####################
 
 # create dotfiles_old in homedir
 echo "Creating $olddir for backup of any existing dotfiles in ~"
