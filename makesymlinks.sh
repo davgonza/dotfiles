@@ -33,15 +33,7 @@ for file in $files; do
     echo "Moving any existing dotfiles from ~ to $olddir"
     mv ~/.$file ~/dotfiles_old/
     echo "Creating symlink to $file in home directory."
-    
-    windows() { [[ -n "$WINDIR" ]]; }
-
-	if windows; then
-		# if this is windows, create hard link 
-		cmd <<< "mklink /H \"%HOME%/.$file\" \"${file%/}\"" > /dev/null
-	else
-		# else create "symlink"
-		ln -s $dir/$file ~/.$file
-	fi
+	ln -s $dir/$file ~/.$file
 done
 read -p "Press any key to continue... " -n1 -s
+
