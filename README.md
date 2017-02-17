@@ -1,19 +1,19 @@
 # dotfiles
-some modest dotfiles
+I'm mostly writing this because I'm probably going to want to do this again (windows or *nix machine), and I want to make sure I remember how to.
 
 ## how to make it work:
 
 #### install
 
-* `git clone git@github.com:davgonza/dotfiles.git`
+* `git clone https://github.com/davgonza/dotfiles.git`
 * `git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim`
 * (optional) in Vim `:PluginInstall`
 
 * … and then to make your vimrc, bash_profile easier to work with, update repo, etc...
 * `cd ~/dotfiles`
-* `chmod +x makesymlinks.sh`
+* `chmod +x makesymlinks.sh`, (on windows, simply run `wmakesymlinks.sh`)
 * `./makesymlinks.sh`
-* … voila ! Dot files are easier to update/maintain
+* voila ! Dot files are easier to update/maintain
 
 #### maintenance
 
