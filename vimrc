@@ -264,7 +264,3 @@ function! GrepInServerProject(regex)
 endfunction
 
 
-
-
-" TODO: add this blurb to github
-" (I'm mostly writing this because I'm probably going to want to do this again, and I want to make sure I remember how to.)
