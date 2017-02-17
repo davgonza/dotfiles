@@ -251,24 +251,20 @@ function! CurrentProject()
 	echo "current project " something
 endfunction
 
-nnoremap gfp :call CustomGrep("<C-R><C-W>")
+nnoremap gfp :call GrepInServerProject("<C-R><C-W>")
 
-function! CustomGrep(regex)
+function! GrepInServerProject(regex)
 	let f_path = split(expand('%:p:h'), '\')
 	call remove(f_path, 5, len(f_path)-1)
-	let something = join(f_path, "/")
+	let cproject = join(f_path, "/")
 
-	" basically, surround with quotes, to execute later
-	grep '"' . a:regex . '" ' . '"' . something . '"'
-
-
+	" basically, surround with quotes, to execute
+	:execute "grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xml"
+	:execute "cw"
 endfunction
 
 
 
 
+" TODO: add this blurb to github
 " (I'm mostly writing this because I'm probably going to want to do this again, and I want to make sure I remember how to.)
-"
-"
-"
-"

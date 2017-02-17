@@ -17,7 +17,6 @@ if exist "%temp%\getadmin.vbs" ( del "%temp%\getadmin.vbs" )
 pushd "%CD%"
 CD /D "%~dp0"
 :: BatchGotAdmin (Run as Admin code ends)
-:: Your codes should start from the following line
 
 REM Windows version
 REM This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
