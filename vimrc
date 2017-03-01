@@ -59,8 +59,8 @@ nnoremap co "_ciw
 nnoremap vo viw
 nnoremap do diw
 nnoremap yo yiw
-nnoremap yq ^y$
-nnoremap dq ^d$
+nnoremap yu ^y$
+nnoremap du ^d$
 
 onoremap 8 iW
 onoremap q i"
@@ -278,7 +278,7 @@ function! GrepInClientProject(regex)
 	let cproject = join(f_path, "/")
 
 	" basically, surround with quotes, to execute
-	:execute "grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml"
+	:execute "grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx"
 	:execute "cw"
 endfunction
 
