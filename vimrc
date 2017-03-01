@@ -11,6 +11,7 @@ set showmode                    " show the current mode
 set clipboard=unnamed           " set clipboard to unnamed to access the system clipboard under windows
 set incsearch
 set tabstop=4
+set expandtab                   " insert 4 spaces instead of the tab char
 set shiftwidth=4
 set splitbelow
 set splitright
@@ -24,6 +25,7 @@ set fileencodings=ucs-bom,utf8,prc
 set statusline=%<%F\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 let mapleader = ","
 let &showbreak = ' ◄◄ '
+
 set wrap
 set cpo=n
 
@@ -57,6 +59,8 @@ nnoremap co "_ciw
 nnoremap vo viw
 nnoremap do diw
 nnoremap yo yiw
+nnoremap yq ^y$
+nnoremap dq ^d$
 
 onoremap 8 iW
 onoremap q i"
@@ -81,7 +85,6 @@ if executable('ag')
 
 endif
 let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
-" grep "StoredProcedure" "C:/src/Admin/JW.Admin.Server/JW.Admin.Field.ServiceInterface/"
 
 
 
@@ -108,7 +111,7 @@ nnoremap gq vi"p
 nnoremap gr @:
 nnoremap g. :wqa<cr>
 nnoremap gn :new +setl\ buftype=nofile
-
+nnoremap gy *Nciw
 
 
 
@@ -167,6 +170,9 @@ nnoremap c "_c
 vnoremap c "_c
 nnoremap C "_C
 vnoremap C "_C
+
+" register
+vnoremap p "_dp
 map <leader>y "*y
 
 
@@ -193,6 +199,7 @@ let loaded_matchparen = 1
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
 let g:ctrlp_by_filename = 1
 let g:ctrlp_use_caching = 0
+let g:ctrlp_lazy_update = 5
 
 
 
@@ -202,7 +209,7 @@ let g:ctrlp_use_caching = 0
 " if this is a terminal
 if &term == 'win32' || &term == 'xterm-256color'
 	" used to be nnoremap go viw"0p
-	nnoremap go viwp
+	nnoremap go viw"0p
 
 	" fixes the problem when jumping up a 'count', with relative line
 	" numbers on. if a v:count was not specified, then 'gj', move up visually a
@@ -252,6 +259,7 @@ function! CurrentProject()
 endfunction
 
 nnoremap gfp :call GrepInServerProject("<C-R><C-W>")
+nnoremap gfc :call GrepInClientProject("<C-R><C-W>")
 
 function! GrepInServerProject(regex)
 	let f_path = split(expand('%:p:h'), '\')
@@ -263,4 +271,37 @@ function! GrepInServerProject(regex)
 	:execute "cw"
 endfunction
 
+
+function! GrepInClientProject(regex)
+	let f_path = split(expand('%:p:h'), '\')
+	call remove(f_path, 5, len(f_path)-1)
+	let cproject = join(f_path, "/")
+
+	" basically, surround with quotes, to execute
+	:execute "grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml"
+	:execute "cw"
+endfunction
+
+
+
+nnoremap gu :call EasyFindReplace("<C-R><C-W>", "<C-R><C-W>")
+function! EasyFindReplace(old,new)
+    let line=getline('.')
+
+    while line !~ "public.*(" && line !~ "private.*("
+        :execute "normal! k"
+        let line=getline('.')
+    endwhile
+    let startingLineNumber=line('.')
+
+    " now that we're at the method, go to the beginning, and find first
+    " bracket, then find corresponding bracket
+    :execute "normal! 0/{\<cr>%"
+    let lastLineNumber=line('.')
+    echo lastLineNumber
+
+    let exp=':' . startingLineNumber . ',' . lastLineNumber . 's/\<' . a:old .'\>/'. a:new .'/g'
+
+    execute exp
+endfunction
 
