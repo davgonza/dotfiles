@@ -26,6 +26,12 @@ set statusline=%<%F\ %h%m%r%=%-14.(%l,%c%V%)\ %P
 let mapleader = ","
 let &showbreak = ' ◄◄ '
 
+
+set undodir=~/tmp//
+set backupdir=~/tmp//
+set directory=~/tmp//
+
+
 set wrap
 set cpo=n
 
@@ -76,7 +82,6 @@ vnoremap q i"
 vnoremap s i'
 nnoremap r @a
 nnoremap Y y$
-nnoremap xx dd
 nnoremap K i<CR><Esc>l
 
 " The Silver Searcher
@@ -110,10 +115,15 @@ nnoremap gs vi'p
 nnoremap gq vi"p
 nnoremap gr @:
 nnoremap g. :wqa<cr>
-nnoremap gn :new +setl\ buftype=nofile
+" nnoremap gn :new +setl\ buftype=nofile
 nnoremap gy *Nciw
+nnoremap gnd :cd %:p:h<CR>
 
+nnoremap gns :call GrepInServerProject("<C-R><C-W>")
+nnoremap gnc :call GrepInClientProject("<C-R><C-W>")
+nnoremap gu :call EasyFindReplace("<C-R><C-W>", "<C-R><C-W>")
 
+nnoremap dgm d/)<CR> :nohl<cr>bbw
 
 
 
@@ -149,21 +159,21 @@ Plugin 'jeffkreeftmeijer/vim-numbertoggle'
 Plugin 'kien/ctrlp.vim'
 Plugin 'luochen1990/rainbow'
 Plugin 'tpope/vim-abolish'
-
+Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plugin 'ryanoasis/vim-devicons'
 
 call vundle#end()            		" required
 filetype plugin indent on    		" required
 
 
 
-
-
-
 "————————————————————————————————————————————————————————————————————————————
-" OVEWRITES DEFAULT COPY + PASTE BEHAVIOUR
+" OVERWRITES DEFAULT COPY + PASTE BEHAVIOUR
 "———————————————————————————————————————————————————————————————————————————
-nnoremap x "_d
+nnoremap x "_dl
 vnoremap x "_d
+nnoremap dx "_dd
+
 nnoremap X "_D
 vnoremap X "_D
 nnoremap c "_c
@@ -200,6 +210,12 @@ let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-
 let g:ctrlp_by_filename = 1
 let g:ctrlp_use_caching = 0
 let g:ctrlp_lazy_update = 5
+let NERDTreeIgnore = ['\.xaml.cs$', '.*pdb.*', '.*Tests.*']
+let g:NERDTreeFileExtensionHighlightFullName = 1
+let g:NERDTreeExactMatchHighlightFullName = 1
+let g:NERDTreePatternMatchHighlightFullName = 1
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+let NERDTreeShowHidden=1
 
 
 
@@ -258,8 +274,6 @@ function! CurrentProject()
 	echo "current project " something
 endfunction
 
-nnoremap gfp :call GrepInServerProject("<C-R><C-W>")
-nnoremap gfc :call GrepInClientProject("<C-R><C-W>")
 
 function! GrepInServerProject(regex)
 	let f_path = split(expand('%:p:h'), '\')
@@ -270,7 +284,6 @@ function! GrepInServerProject(regex)
 	:execute "grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xml"
 	:execute "cw"
 endfunction
-
 
 function! GrepInClientProject(regex)
 	let f_path = split(expand('%:p:h'), '\')
@@ -283,8 +296,6 @@ function! GrepInClientProject(regex)
 endfunction
 
 
-
-nnoremap gu :call EasyFindReplace("<C-R><C-W>", "<C-R><C-W>")
 function! EasyFindReplace(old,new)
     let line=getline('.')
 
@@ -300,7 +311,7 @@ function! EasyFindReplace(old,new)
     let lastLineNumber=line('.')
     echo lastLineNumber
 
-    let exp=':' . startingLineNumber . ',' . lastLineNumber . 's/\<' . a:old .'\>/'. a:new .'/g'
+    let exp=':silent ' . startingLineNumber . ',' . lastLineNumber . 's/\<' . a:old .'\>/'. a:new .'/g'
 
     execute exp
 endfunction
