@@ -131,7 +131,7 @@ nnoremap <silent>gw- :exe "15winc >"<CR>
 nnoremap <silent>gw[ :exe "15winc <"<CR>
 nnoremap <silent>gw= :exe "15winc +"<CR>
 nnoremap <silent>gw] :exe "15winc -"<CR>
-nnoremap gqf :e $MYVIMRC<cr>
+nnoremap gif :e $MYVIMRC<cr>
 nnoremap gqr :w<cr> :so %<cr> :nohl<cr> :echo<cr>
 nnoremap gm vi(p
 nnoremap gs vi'p
@@ -142,8 +142,10 @@ nnoremap g0 :wqa<cr>
 nnoremap gy *Nciw
 nnoremap gnd :cd %:p:h<CR>
 
-nnoremap gng :call GrepInProject("<C-R><C-W>") \| :echo printf("Have %d occurrences", len(getqflist()))
-" nnoremap cw :cw :echo printf("Have %d occurrences", len(getqflist()))
+nnoremap gng :call GrepInProject("<C-R><C-W>") 
+nnoremap gns :call GrepInSolution("<C-R><C-W>") 
+
+
 
 nnoremap gnf :let @+ = expand("%:p")<cr>
 nnoremap gu :call EasyFindReplace("<C-R><C-W>", "<C-R><C-W>")
@@ -360,38 +362,84 @@ function! ToggleChars()
 endfunction
 
 
+
+
+autocmd Filetype qf setlocal statusline=\ %n\ \ %f%=%L\ lines\ 
+
 function! GrepInProject(regex)
     let f_path = split(expand('%:p:h'), '\')
     call remove(f_path, 5, len(f_path)-1)
     let cproject = join(f_path, "/")
 
     if IsClient() == 1
-
         :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin"
-
     else
-
         :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin"
+    endif
 
+    :execute "cw"
+endfunction
+
+
+
+
+function! GrepInSpecificProject(regex, project)
+
+" :grep -rn "ExpressionHelpers" C:/src/Admin/JW.Admin.Server/JW.Admin.Field.ServiceInterface C:/src/Admin/JW.Admin.Server/JW.Admin.Bethel.ServiceInterface --include \*.cs --include \*.xml --exclude-dir=obj --exclude-dir=bin
+
+    let directories = "C:/src/Admin/JW.Admin.Server/JW.Admin.PlaceHolder.Requirements C:/src/Admin/JW.Admin.Server/JW.Admin.PlaceHolder.ServiceInterface C:/src/Admin/JW.Admin.Server/JW.Admin.PlaceHolder.ServiceModel"
+    let directories = substitute(directories, "PlaceHolder", project, "g")
+
+    "project is supplied by user
+    if IsClient() == 1
+        echo "only works with server"
+        " :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . directories . " --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin"
+    else
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . directories . " --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin"
+    endif
+
+    :execute "cw"
+endfunction
+
+
+
+
+
+
+function! GrepInSolution(regex)
+    let f_path = split(expand('%:p:h'), '\')
+    call remove(f_path, 4, len(f_path)-1)
+    let solution = join(f_path, "/")
+
+    let solution = strpart(solution, 0, len(solution)-6)
+
+    if IsClient() == 1
+        let solution = solution . "Client"
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin"
+    else
+        let solution = solution . "Server"
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin"
     endif
 
     :execute "cw"
 
+
+
+
+
+
+
+
+
+nnoremap <leader>y :call TestMethod()<CR>
+function! TestMethod()
+    let f_path = split(expand('%:p:h'), '\')
+    call remove(f_path, 4, len(f_path)-1)
+    let solution = join(f_path, "/")
+
+    echo solution
 endfunction
 
-nnoremap what :call What()<CR>
-function! What()
-
-    :echo expand('%:t') 
-endfunction
-
-
-" old
-" function! GrepInClientProject(regex)
-" 
-"     " basically, surround with quotes, to execute
-"     :execute "cw"
-" endfunction
 
 
 function! EasyFindReplace(old,new)
@@ -453,40 +501,41 @@ function! SearchPrev()
 endfunction
 
 
+
+
+
 nnoremap gni :call SimilarFile()<cr>
-nnoremap gnu :call SimilarFile2()<cr>
-
-
-
-
-function! SimilarFile2()
-    let currentFile = expand("%:t")
-
-    if IsClient() == 1
-        exe "normal \,c" . currentFile
-    else
-        exe "normal \,s" . currentFile
-    endif
-endfunction
 
 function! SimilarFile()
     let currentFile = expand("%:t")
 
     if IsClient() == 1
-        let dest = ""
-
         if currentFile =~ ".*View.xaml"
             " extract View.xaml piece of file name.
-            let dest = strpart(currentFile, 0, len(currentFile)-5)
-            let viewmodel = dest . "Model.cs"
+            let currentFile = strpart(currentFile, 0, len(currentFile)-5)
+            let viewmodel = currentFile . "Model.cs"
             exe "normal \,c" . viewmodel
         elseif currentFile =~ ".*ViewModel.cs"
-            let dest = strpart(currentFile, 0, len(currentFile)-8)
-            let view = dest . ".xaml"
+            let currentFile = strpart(currentFile, 0, len(currentFile)-8)
+            let view = currentFile . ".xaml"
             exe "normal \,c" . view
         endif
     else
-        " exe "normal \,s" . currentFile
+        if currentFile =~ ".cs"
+            let currentFile = strpart(currentFile, 0, len(currentFile)-3)
+        elseif currentFile =~ ".xml"
+            let currentFile = strpart(currentFile, 0, len(currentFile)-4)
+        end
+
+        if currentFile =~ "Manager"
+            let currentFile = strpart(currentFile, 0, len(currentFile)-7)
+
+            if currentFile[0] == "I"
+                let currentFile = strpart(currentFile, 1, len(currentFile))
+            endif
+        endif
+
+        exe "normal \,s" . currentFile
     endif
 endfunction
 
