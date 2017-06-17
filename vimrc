@@ -422,6 +422,7 @@ function! GrepInSolution(regex)
     endif
 
     :execute "cw"
+endfunction
 
 
 
