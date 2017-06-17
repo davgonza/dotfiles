@@ -22,7 +22,7 @@ set enc=utf-8
 set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=ucs-bom,utf8,prc
-set statusline=%<%F\ %h%m%r%=%-14.(%l,%c%V%)\ %P
+set statusline=%<%F\ %h%m%r%=%-14.(%l/%L,%c%V%)\ %P 
 let mapleader = ","
 let &showbreak = ' ◄◄ '
 set undodir=~/tmp//
@@ -48,6 +48,7 @@ nnoremap <leader>v :CtrlPBuffer<cr>
 nnoremap <leader>x :NERDTreeFind<cr>
 nnoremap <leader>s :CtrlP C:\\SRC\\Admin\\JW.Admin.Server<cr>
 nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
+nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
 
 " only alt maps
 nnoremap <M-j> <C-w>j
@@ -82,7 +83,9 @@ onoremap m i(
 vnoremap m i(
 " nnoremap vm %vi(
 " nnoremap cm %ci(
-nnoremap <cr> f(l
+" nnoremap <cr> f(l
+" inoremap S-CR> <CR>k
+inoremap <S-CR> <CR><C-o>k
 
 vnoremap 8 iW
 vnoremap q i"
@@ -91,6 +94,8 @@ nnoremap r @a
 nnoremap Y y$
 nnoremap K i<CR><Esc>l
 nnoremap - W
+map <C-j> :cn<CR>
+map <C-k> :cp<CR>
 
 " The Silver Searcher
 if executable('ag')
@@ -132,18 +137,23 @@ nnoremap gm vi(p
 nnoremap gs vi'p
 nnoremap gq vi"p
 nnoremap gr @:
-nnoremap g. :wqa<cr>
+nnoremap g0 :wqa<cr>
 " nnoremap gn :new +setl\ buftype=nofile
 nnoremap gy *Nciw
 nnoremap gnd :cd %:p:h<CR>
 
-nnoremap gns :call GrepInServerProject("<C-R><C-W>")
-nnoremap gnc :call GrepInClientProject("<C-R><C-W>")
+nnoremap gng :call GrepInProject("<C-R><C-W>") \| :echo printf("Have %d occurrences", len(getqflist()))
+" nnoremap cw :cw :echo printf("Have %d occurrences", len(getqflist()))
+
 nnoremap gnf :let @+ = expand("%:p")<cr>
 nnoremap gu :call EasyFindReplace("<C-R><C-W>", "<C-R><C-W>")
 
-nnoremap dgm d/)<CR> :nohl<cr>bbw
-nnoremap cgm c/)<CR> :nohl<cr>bbw
+" new
+nnoremap dgp d/)<CR> :nohl<cr>bbw
+nnoremap dgb d/}<CR> :nohl<cr>bbw
+nnoremap dgq d/"<CR> :nohl<cr>bbw
+
+" nnoremap cgm c/)<CR> :nohl<cr>bbw
 " nnoremap cgm c/\()\|}\)<CR> :nohl<cr>bbw
 
 nnoremap giv f=f"lvi"
@@ -164,7 +174,7 @@ vnoremap giv <esc>f=f"lvi"
 
 
 "————————————————————————————————————————————————————————————————————————————
-" Plugins (using vundle) will have different save paths 
+" vundle will have different save paths 
 "————————————————————————————————————————————————————————————————————————————
 let s:uname = system("uname -s")
 if has("unix")
@@ -187,6 +197,7 @@ if has("unix")
     endif
 elseif has("win32")
     " beloved windows
+    hi Visual  ctermfg=Black ctermbg=white gui=none
     
     set rtp+=~/vimfiles/bundle/Vundle.vim/
     let path='~/vimfiles/bundle'
@@ -198,10 +209,15 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'jeffkreeftmeijer/vim-numbertoggle'
 Plugin 'kien/ctrlp.vim'
-Plugin 'luochen1990/rainbow'
+Plugin 'junegunn/rainbow_parentheses.vim'
 Plugin 'tpope/vim-abolish'
 Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plugin 'ryanoasis/vim-devicons'
+Plugin 'tpope/vim-fugitive'
+Plugin 'farmergreg/vim-lastplace'
+
+
+
 
 call vundle#end()                    " required
 filetype plugin indent on            " required
@@ -214,6 +230,8 @@ filetype plugin indent on            " required
 nnoremap x "_dl
 vnoremap x "_d
 nnoremap dx "_dd
+" nnoremap dy d/\\()\\\|}\\)<CR> :nohl<cr>bbw
+" some test with a parenthesis__)__also a squiggly bracket__}__and then more text
 
 nnoremap X "_D
 vnoremap X "_D
@@ -244,27 +262,57 @@ map <leader>y "*y
 " Plugin remaps
 "————————————————————————————————————————————————————————————————————————————
 set number
-hi Visual  ctermfg=Black ctermbg=white gui=none
-let g:rainbow_active = 1
-let loaded_matchparen = 1
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
 let g:ctrlp_by_filename = 1
 let g:ctrlp_use_caching = 0
 let g:ctrlp_lazy_update = 5
-let NERDTreeIgnore = ['\.xaml.cs$', '.*pdb.*', '.*Tests.*']
+let NERDTreeIgnore = ['\.xaml.cs$', '.*pdb.*', '.*Tests.*', '.*bin.*', '.*obj.*', '.*feature.cs.*']
 let g:NERDTreeFileExtensionHighlightFullName = 1
 let g:NERDTreeExactMatchHighlightFullName = 1
 let g:NERDTreePatternMatchHighlightFullName = 1
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let NERDTreeShowHidden=1
+au VimEnter * RainbowParentheses
+let g:rainbow#max_level = 16
+
+" more plugin remaps
+nnoremap gnh :Glog -- %<CR>
+nnoremap gnm :call MethodHistory("<C-R><C-W>")
+
+function! MethodHistory(regex)
+    let f_path = @%
+
+    :execute "Git! log -L :" . a:regex . ":" . f_path
+endfunction
+
+
+
+
+
+
+
+
+
+
+setlocal foldexpr=matchstr(substitute(getline(v:lnum),'\|.*','',''),'^.*/')==#matchstr(substitute(getline(v:lnum+1),'\|.*','',''),'^.*/')?1:'<1'
+
+
+
+
+
+
+
+hi MatchParen term=bold ctermbg=Red
+" unique colors, in powershell with monokai theme 
+" white, yellow, red, cyan, green, darkgray, darkmagenta
 
 
 
 "————————————————————————————————————————————————————————————————————————————
 " vsvim (visual studio) and terminal keymaps
 "————————————————————————————————————————————————————————————————————————————
-" if this is a terminal
-if &term == 'win32' || &term == 'xterm-256color'
+" if this is a terminal (including mingw )
+if &term == 'win32' || &term == 'xterm-256color' || has('unix')
     " used to be nnoremap go viw"0p
     nnoremap go viw"0p
 
@@ -283,7 +331,7 @@ if &term == 'win32' || &term == 'xterm-256color'
 
 else
     " visual studio
-    nnoremap go viwp
+    nnoremap go viwP
     nnoremap / /\c
 endif     
 
@@ -312,25 +360,38 @@ function! ToggleChars()
 endfunction
 
 
-function! GrepInServerProject(regex)
+function! GrepInProject(regex)
     let f_path = split(expand('%:p:h'), '\')
     call remove(f_path, 5, len(f_path)-1)
     let cproject = join(f_path, "/")
 
-    " basically, surround with quotes, to execute
-    :execute "grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xml"
+    if IsClient() == 1
+
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin"
+
+    else
+
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin"
+
+    endif
+
     :execute "cw"
+
 endfunction
 
-function! GrepInClientProject(regex)
-    let f_path = split(expand('%:p:h'), '\')
-    call remove(f_path, 5, len(f_path)-1)
-    let cproject = join(f_path, "/")
+nnoremap what :call What()<CR>
+function! What()
 
-    " basically, surround with quotes, to execute
-    :execute "grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx"
-    :execute "cw"
+    :echo expand('%:t') 
 endfunction
+
+
+" old
+" function! GrepInClientProject(regex)
+" 
+"     " basically, surround with quotes, to execute
+"     :execute "cw"
+" endfunction
 
 
 function! EasyFindReplace(old,new)
@@ -393,6 +454,20 @@ endfunction
 
 
 nnoremap gni :call SimilarFile()<cr>
+nnoremap gnu :call SimilarFile2()<cr>
+
+
+
+
+function! SimilarFile2()
+    let currentFile = expand("%:t")
+
+    if IsClient() == 1
+        exe "normal \,c" . currentFile
+    else
+        exe "normal \,s" . currentFile
+    endif
+endfunction
 
 function! SimilarFile()
     let currentFile = expand("%:t")
@@ -411,9 +486,10 @@ function! SimilarFile()
             exe "normal \,c" . view
         endif
     else
-        " exe "normal \,s" . viewmodel
+        " exe "normal \,s" . currentFile
     endif
 endfunction
+
 
 
 
