@@ -32,6 +32,7 @@ set wrap
 set cpo=n
 set scrolloff=3
 
+
 syntax on                       " turn syntax highlighting on by default
 filetype off
 behave mswin
@@ -41,6 +42,7 @@ nnoremap <space> :
 
 
 nnoremap <leader>a gg"*yG<c-o><c-o>zz
+nnoremap <leader>b <c-w>p
 nnoremap <leader>e :nohl<cr> :echo<cr>
 nnoremap <leader>f :b#<cr>
 nnoremap <leader>m :CtrlPMRUFiles<cr>
@@ -49,6 +51,10 @@ nnoremap <leader>x :NERDTreeFind<cr>
 nnoremap <leader>s :CtrlP C:\\SRC\\Admin\\JW.Admin.Server<cr>
 nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
+nnoremap <leader><tab> :NERDTreeFocus<cr>
+
+" for focusing quickfix window
+nnoremap <leader>q <c-w>b
 
 " only alt maps
 nnoremap <M-j> <C-w>j
@@ -71,11 +77,17 @@ nnoremap 1l l
 nnoremap co "_ciw
 nnoremap vo viw
 nnoremap do diw
-nnoremap yo yiw
+noremap yo yiw
 nnoremap yu ^y$
 nnoremap du ^d$
-nnoremap vu ^v$
 
+nnoremap vu ^v$
+nnoremap vl v$
+nnoremap vh v^
+nnoremap vv V
+
+onoremap l g$
+onoremap h g^
 onoremap 8 iW
 onoremap q i"
 onoremap s i'
@@ -94,7 +106,7 @@ nnoremap r @a
 nnoremap Y y$
 nnoremap K i<CR><Esc>l
 nnoremap - W
-map <C-j> :cn<CR>
+map <C-j> :cn<CR>zz
 map <C-k> :cp<CR>
 
 " The Silver Searcher
@@ -138,19 +150,27 @@ nnoremap gs vi'p
 nnoremap gq vi"p
 nnoremap gr @:
 nnoremap g0 :wqa<cr>
-" nnoremap gn :new +setl\ buftype=nofile
 nnoremap gy *Nciw
 nnoremap gnd :cd %:p:h<CR>
-
-nnoremap gng :call GrepInProject("<C-R><C-W>") 
-nnoremap gns :call GrepInSolution("<C-R><C-W>") 
-
-
-
+nnoremap ga 1hi<space>
 nnoremap gnf :let @+ = expand("%:p")<cr>
-nnoremap gu :call EasyFindReplace("<C-R><C-W>", "<C-R><C-W>")
 
-" new
+
+nnoremap gpu :call GrepInProjectUnderCursor("<C-R><C-W>")<left><left>
+nnoremap gpf :call GrepInProjectFree("")<left><left>
+
+nnoremap gsu :call GrepInSolution("<C-R><C-W>", "*.xaml")<left><left>
+nnoremap gsf :call GrepInSolutionFree("", "*.cs")<left><left><left><left><left><left><left><left><left><left>
+
+nnoremap gio :call GrepInOtherProject("<C-R><C-W>", "Bethel Field Education Persons")<left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left>
+
+nnoremap <leader>gs :call ClipboardServer()<cr>
+nnoremap <leader>gc :call ClipboardClient()<cr>
+nnoremap gnn :call GetFileName()<cr>
+
+
+" nnoremap ger :call EasyFindReplace("<C-R><C-W>", "<C-R><C-W>")
+
 nnoremap dgp d/)<CR> :nohl<cr>bbw
 nnoremap dgb d/}<CR> :nohl<cr>bbw
 nnoremap dgq d/"<CR> :nohl<cr>bbw
@@ -158,16 +178,17 @@ nnoremap dgq d/"<CR> :nohl<cr>bbw
 " nnoremap cgm c/)<CR> :nohl<cr>bbw
 " nnoremap cgm c/\()\|}\)<CR> :nohl<cr>bbw
 
-nnoremap giv f=f"lvi"
-nnoremap gic f=f"lci"
 
 " less latency, between giv, and giiv. possibly change later
-nnoremap giiv F=f"lvi"
-nnoremap giic F=f"lci"
+" nnoremap giiv F=f"lvi"
+" nnoremap giic F=f"lci"
 
-" easy way to scroll through strings... ?
-vnoremap giv <esc>f=f"lvi"
+" vnoremap giv <esc>f=f"lvi"
+" nnoremap giv f=f"1lvi"
+" nnoremap gic f=f"1lci"
 
+
+"" tests " another test " thing"
 
 
 
@@ -218,6 +239,19 @@ Plugin 'ryanoasis/vim-devicons'
 Plugin 'tpope/vim-fugitive'
 Plugin 'farmergreg/vim-lastplace'
 
+" Plugin 'OmniSharp/omnisharp-vim'
+Plugin 'tpope/vim-dispatch'
+Plugin 'vim-syntastic/syntastic'
+Plugin 'ervandew/supertab'
+Plugin 'vim-scripts/L9'
+Plugin 'vim-scripts/FuzzyFinder'
+Plugin 'scrooloose/nerdcommenter'
+
+
+
+
+
+
 
 
 
@@ -261,7 +295,7 @@ map <leader>y "*y
 
 
 "————————————————————————————————————————————————————————————————————————————
-" Plugin remaps
+" Remaps for plugins
 "————————————————————————————————————————————————————————————————————————————
 set number
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
@@ -276,16 +310,38 @@ let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let NERDTreeShowHidden=1
 au VimEnter * RainbowParentheses
 let g:rainbow#max_level = 16
+let g:ctrlp_mruf_max = 500
 
 " more plugin remaps
-nnoremap gnh :Glog -- %<CR>
+nnoremap gnh :silent Glog -- %<CR> :cw<CR> G
+
 nnoremap gnm :call MethodHistory("<C-R><C-W>")
+nnoremap gnl :call LineHistory()
+
+
+
+function! LineHistory()
+    let f_path = expand('%:p')
+
+    :execute "silent Git! log -L " . line(".") . "," . line(".") . ":" . f_path
+endfunction
+
 
 function! MethodHistory(regex)
-    let f_path = @%
+    let f_path = expand('%:p')
 
-    :execute "Git! log -L :" . a:regex . ":" . f_path
+    :execute "silent Git! log -L :" . a:regex . ":" . f_path
 endfunction
+
+
+nnoremap gwo :call ClearAllBuffers()<cr>
+function! ClearAllBuffers()
+    :%bd|e#
+endfunction
+
+
+
+let loaded_matchparen = 1 
 
 
 
@@ -314,7 +370,7 @@ hi MatchParen term=bold ctermbg=Red
 " vsvim (visual studio) and terminal keymaps
 "————————————————————————————————————————————————————————————————————————————
 " if this is a terminal (including mingw )
-if &term == 'win32' || &term == 'xterm-256color' || has('unix')
+if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_running')
     " used to be nnoremap go viw"0p
     nnoremap go viw"0p
 
@@ -331,6 +387,14 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix')
     noremap n :set nohlsearch\|:call SearchNext()<CR>
     noremap N :set nohlsearch\|:call SearchPrev()<CR>
 
+    if has('gui_running')
+        colorscheme molokai
+        set guioptions-=m  "remove menu bar
+        set guioptions-=T  "remove toolbar
+        set guioptions-=L  
+
+        hi Visual  guifg=Black guibg=white
+    endif
 else
     " visual studio
     nnoremap go viwP
@@ -366,7 +430,20 @@ endfunction
 
 autocmd Filetype qf setlocal statusline=\ %n\ \ %f%=%L\ lines\ 
 
-function! GrepInProject(regex)
+function! GetFileName()
+    let f_path = split(expand('%:p'), '\')
+    let aIndex = len(f_path)-1
+    let fileName = f_path[aIndex]
+
+    let @+ = fileName
+    echo "copied " . "'" . fileName . "'" . " to clipboard"
+endfunction
+
+function! GrepInProjectFree(searchPattern)
+    call GrepInProjectUnderCursor(a:searchPattern)
+endfunction
+
+function! GrepInProjectUnderCursor(regex)
     let f_path = split(expand('%:p:h'), '\')
     call remove(f_path, 5, len(f_path)-1)
     let cproject = join(f_path, "/")
@@ -378,35 +455,69 @@ function! GrepInProject(regex)
     endif
 
     :execute "cw"
+    :execute "normal \,b"
 endfunction
 
 
 
 
-function! GrepInSpecificProject(regex, project)
 
+
+
+
+
+
+
+
+
+
+
+
+
+let g:fuf_file_exclude = '\v\~$|\.o$|\.exe$|\.bak$|\.xml$|\.cs$'
+
+
+
+
+
+
+
+function! GrepInOtherProject(regex, projects)
 " :grep -rn "ExpressionHelpers" C:/src/Admin/JW.Admin.Server/JW.Admin.Field.ServiceInterface C:/src/Admin/JW.Admin.Server/JW.Admin.Bethel.ServiceInterface --include \*.cs --include \*.xml --exclude-dir=obj --exclude-dir=bin
 
-    let directories = "C:/src/Admin/JW.Admin.Server/JW.Admin.PlaceHolder.Requirements C:/src/Admin/JW.Admin.Server/JW.Admin.PlaceHolder.ServiceInterface C:/src/Admin/JW.Admin.Server/JW.Admin.PlaceHolder.ServiceModel"
-    let directories = substitute(directories, "PlaceHolder", project, "g")
+    let userProjects = split(a:projects, " ")
+
+    let standardDirectories = "C:/src/Admin/JW.Admin.Server/JW.Admin.PlaceHolder.Requirements C:/src/Admin/JW.Admin.Server/JW.Admin.PlaceHolder.ServiceInterface C:/src/Admin/JW.Admin.Server/JW.Admin.PlaceHolder.ServiceModel"
+    let grepDirectory = ""
+
+    let toCount = len(userProjects) - 1
+    for i in range(0, toCount) 
+        let grepDirectory = grepDirectory . substitute(standardDirectories, "PlaceHolder", userProjects[i], "g")
+        let grepDirectory = grepDirectory . " "
+    endfor
+
+    let grepDirectory = strpart(grepDirectory, 0, len(grepDirectory)-1)
 
     "project is supplied by user
     if IsClient() == 1
         echo "only works with server"
-        " :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . directories . " --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin"
+       " :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . grepDirectory . " --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin"
     else
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . directories . " --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin"
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . grepDirectory . " --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin"
     endif
 
     :execute "cw"
+    :execute "normal \,b"
 endfunction
 
 
 
 
+function! GrepInSolutionFree(searchPattern, additionalFileFilter)
+    call GrepInSolution(a:searchPattern, a:additionalFileFilter)
+endfunction
 
-
-function! GrepInSolution(regex)
+function! GrepInSolution(regex, additionalFileFilter)
     let f_path = split(expand('%:p:h'), '\')
     call remove(f_path, 4, len(f_path)-1)
     let solution = join(f_path, "/")
@@ -415,31 +526,29 @@ function! GrepInSolution(regex)
 
     if IsClient() == 1
         let solution = solution . "Client"
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin"
+
+        if len(a:additionalFileFilter) >= 0
+            :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\" . a:additionalFileFilter . " --exclude-dir=obj --exclude-dir=bin"
+        else
+            :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin"
+        endif
     else
         let solution = solution . "Server"
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin"
+
+        if len(a:additionalFileFilter) >= 0
+            :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\" . a:additionalFileFilter . " --exclude-dir=obj --exclude-dir=bin"
+        else
+            :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin"
+        endif
     endif
 
     :execute "cw"
+    :execute "normal \,b"
 endfunction
 
 
 
 
-
-
-
-
-
-nnoremap <leader>y :call TestMethod()<CR>
-function! TestMethod()
-    let f_path = split(expand('%:p:h'), '\')
-    call remove(f_path, 4, len(f_path)-1)
-    let solution = join(f_path, "/")
-
-    echo solution
-endfunction
 
 
 
@@ -505,7 +614,50 @@ endfunction
 
 
 
+
+
+function! ClipboardServer()
+    let aVar = @+
+    exe "normal \,s" . aVar
+endfunction
+
+function! ClipboardClient()
+    let aVar = @+
+    exe "normal \,c" . aVar
+endfunction
+
+
+
+
+
+
+
+
+
+
+
+
+
 nnoremap gni :call SimilarFile()<cr>
+nnoremap guc :call UnderCursorInRepo("<C-R><C-W>")<cr>
+
+function! UnderCursorInRepo(cursorWord)
+    let word = a:cursorWord
+
+    if IsClient() == 1
+        exe "normal \,c" . word
+    else
+        exe "normal \,s" . word
+    endif
+endfunction
+
+
+
+
+
+
+
+
 
 function! SimilarFile()
     let currentFile = expand("%:t")
@@ -557,3 +709,235 @@ function! IsClient()
     return isclient
 endfunction
 
+
+
+
+
+
+
+
+
+nnoremap <leader>t :call AnotherTest()<CR>
+function! AnotherTest()
+    let userInput = 'BMM'
+    let aListOfStuff = ['C:\src\what\something\yeah\BethelMemberManager.cs', 'C:\src\what\something\yeah\TrainingSchoolClassManager.cs', 'C:\src\what\something\yeah\DepartmentSummaryManager.cs']
+    let array = []
+
+    for thing in aListOfStuff
+        let a = split(thing, '\')
+        let aIndex = len(a)-1
+        let fileName = a[aIndex]
+        
+        let searchSplitUp = filter(split(toupper(userInput), '\zs'), 'v:val =~ "\\w"')
+
+        echo join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '')
+        let theregex = join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '')
+
+        if fileName =~# theregex
+            cal add(array, thing)
+        endif
+     endfor
+
+     echo array
+endfunction
+
+
+
+
+
+
+
+
+"let g:ctrlp_match_func = { 'match': 'TestFunction' }
+function! TestFunction(items, str, limit, mmode, ispath, crfile, regex)
+    let array = []
+    let userInput = input(a:str)
+
+    for thing in a:items
+        let a = split(thing, '\')
+        let aIndex = len(a)-1
+        let fileName = a[aIndex]
+        
+        let searchSplitUp = filter(split(toupper(userInput), '\zs'), 'v:val =~ "\\w"')
+
+        echo join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '')
+        let theregex = join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '')
+
+        if fileName =~# theregex
+            cal add(array, thing)
+        endif
+     endfor
+
+     return array
+endfunction
+
+
+
+
+
+
+
+
+
+nnoremap <expr> <leader>/ SearchCamelCase('/')
+nnoremap <expr> <leader>? SearchCamelCase('?')
+function! SearchCamelCase(dir)
+    call inputsave()
+    let ab = input(a:dir)
+    call inputrestore()
+    let searchSplitUp = filter(split(toupper(ab), '\zs'), 'v:val =~ "\\w"')
+    if len(searchSplitUp) > 0
+        let searchSplitUp[0] = '[' . searchSplitUp[0] . tolower(searchSplitUp[0]) . ']'
+    end
+    let @/ = '\C\<' . join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '') . '\>' 
+
+    return a:dir . "\r"
+endfunction
+
+
+
+" let g:path_to_matcher = "C:/src/profiles/matcher/matcher"
+" let g:ctrlp_match_func = { 'match': 'GoodMatch' }
+
+function! GoodMatch(items, str, limit, mmode, ispath, crfile, regex)
+
+  " Create a cache file if not yet exists
+  let cachefile = ctrlp#utils#cachedir().'/matcher.cache'
+  if !( filereadable(cachefile) && a:items == readfile(cachefile) )
+    call writefile(a:items, cachefile)
+  endif
+  if !filereadable(cachefile)
+    return []
+  endif
+
+  " a:mmode is currently ignored. In the future, we should probably do
+  " something about that. the matcher behaves like "full-line".
+  let cmd = g:path_to_matcher.' --limit '.a:limit.' --manifest '.cachefile.' '
+  if !( exists('g:ctrlp_dotfiles') && g:ctrlp_dotfiles )
+    let cmd = cmd.'--no-dotfiles '
+  endif
+  let cmd = cmd.a:str
+
+  return split(system(cmd), "\n")
+
+endfunction
+
+" let g:ctrlp_match_func = { 'match': 'Function_Name' }
+function! Function_Name(items, str, limit, mmode, ispath, crfile, regex)
+" Arguments:
+" |
+" +- a:items  : The full list of items to search in.
+" |
+" +- a:str    : The string entered by the user.
+" |
+" +- a:limit  : The max height of the match window. Can be used to limit
+" |             the number of items to return.
+" |
+" +- a:mmode  : The match mode. Can be one of these strings:
+" |             + "full-line": match the entire line.
+" |             + "filename-only": match only the filename.
+" |             + "first-non-tab": match until the first tab char.
+" |             + "until-last-tab": match until the last tab char.
+" |
+" +- a:ispath : Is 1 when searching in file, buffer, mru, mixed, dir, and
+" |             rtscript modes. Is 0 otherwise.
+" |
+" +- a:crfile : The file in the current window. Should be excluded from the
+" |             results when a:ispath == 1.
+" |
+" +- a:regex  : In regex mode: 1 or 0.
+
+    return
+
+    let userInput = input(a:str)
+
+    let array = []
+    for thing in a:items
+        let a = split(thing, '\')
+        let aIndex = len(a)-1
+        let fileName = a[aIndex]
+        
+        let searchSplitUp = filter(split(toupper(userInput), '\zs'), 'v:val =~ "\\w"')
+        let searchSplitUp[0] = '[' . searchSplitUp[0] . tolower(searchSplitUp[0]) . ']'
+
+        let theregex = join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '')
+
+        if fileName =~ theregex
+            cal add(array, thing)
+        endif
+     endfor
+  return array
+endfunction
+
+fu! What(lines, input, limit, mmode, ispath, crfile, regex)
+  if a:input == ''
+    " Clear matches, that left from previous matches
+    cal clearmatches()
+    " Hack to clear s:savestr flag in SplitPattern, otherwise matching in
+    " 'tag' mode will work only from 2nd char.
+    cal ctrlp#call('s:SplitPattern', '')
+    let array = a:lines[0:a:limit]
+    if a:ispath && !empty(a:crfile)
+      cal remove(array, index(array, a:crfile))
+    en
+    return array
+  el
+    if a:regex
+      let array = []
+      let func = a:mmode == "filename-only" ? 's:matchfname' : 'match'
+      for item in a:lines
+        if call(func, [item, a:input]) >= 0
+          cal add(array, item)
+        endif
+      endfor
+      cal sort(array, ctrlp#call('s:mixedsort'))
+      cal s:highlight(a:input, a:mmode, a:regex)
+      return array
+    endif
+    " use built-in matcher if mmode set to match until first tab ( in other case
+    " tag.vim doesnt work
+    if a:mmode == "first-non-tab"
+      let array = []
+      " call ctrlp.vim function to get proper input pattern
+      let pat = ctrlp#call('s:SplitPattern', a:input)
+      for item in a:lines
+        if call('s:matchtabs', [item, pat]) >= 0
+          cal add(array, item)
+        en
+      endfo
+      "TODO add highlight
+      cal sort(array, ctrlp#call('s:mixedsort'))
+      return array
+    en
+
+    let matchlist = s:cmatcher(a:lines, a:input, a:limit, a:mmode, a:ispath, a:crfile)
+  en
+
+  cal s:highlight(a:input, a:mmode, a:regex)
+
+  return matchlist
+endf
+
+fu! s:cmatcher(lines, input, limit, mmode, ispath, crfile)
+python << EOF
+lines = vim.eval('a:lines')
+searchinp = vim.eval('a:input')
+limit = int(vim.eval('a:limit'))
+mmode = vim.eval('a:mmode')
+ispath = int(vim.eval('a:ispath'))
+crfile = vim.eval('a:crfile')
+
+if ispath and crfile:
+  try:
+    lines.remove(crfile)
+  except ValueError:
+    pass
+
+try:
+  # TODO we should support smartcase. Needs some fixing on matching side
+  matchlist = fuzzycomt.sorted_match_list(lines, searchinp.lower(), limit, mmode)
+except:
+  matchlist = []
+EOF
+return s:pyeval("matchlist")
+endf
