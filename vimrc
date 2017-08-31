@@ -47,11 +47,11 @@ nnoremap <leader>e :nohl<cr> :echo<cr>
 nnoremap <leader>f :b#<cr>
 nnoremap <leader>m :CtrlPMRUFiles<cr>
 nnoremap <leader>v :CtrlPBuffer<cr>
-nnoremap <leader>x :NERDTreeFind<cr>
+nnoremap <leader>x :NERDTreeFind<cr> :redraw!<cr>
 nnoremap <leader>s :CtrlP C:\\SRC\\Admin\\JW.Admin.Server<cr>
 nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
-nnoremap <leader><tab> :NERDTreeFocus<cr>
+nnoremap <leader><tab> :NERDTreeFocus<cr> :redraw!<cr>
 
 " for focusing quickfix window
 nnoremap <leader>q <c-w>b
@@ -61,12 +61,6 @@ nnoremap <M-j> <C-w>j
 nnoremap <M-k> <C-w>k
 nnoremap <M-h> <C-w>h
 nnoremap <M-l> <C-w>l
-" nnoremap L g$
-" onoremap L g$
-" vnoremap L g$
-" nnoremap H g^
-" onoremap H g^
-" vnoremap H g^
 
 nnoremap h g^
 nnoremap l g$
@@ -88,15 +82,17 @@ nnoremap vv V
 
 onoremap l g$
 onoremap h g^
-onoremap 8 iW
+onoremap 8 aW
 onoremap q i"
 onoremap s i'
 onoremap m i(
 vnoremap m i(
-" nnoremap vm %vi(
-" nnoremap cm %ci(
+nnoremap vm %vi(
+nnoremap cm %ci(
 " nnoremap <cr> f(l
 " inoremap S-CR> <CR>k
+
+" some random test (between ) and more text here (ok more )
 inoremap <S-CR> <CR><C-o>k
 
 vnoremap 8 iW
@@ -112,8 +108,8 @@ map <C-k> :cp<CR>
 " The Silver Searcher
 if executable('ag')
   " set grepprg=ag\ --nogroup\ --nocolor
-
 endif
+
 let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 
 
@@ -166,7 +162,14 @@ nnoremap gio :call GrepInOtherProject("<C-R><C-W>", "Bethel Field Education Pers
 
 nnoremap <leader>gs :call ClipboardServer()<cr>
 nnoremap <leader>gc :call ClipboardClient()<cr>
+nnoremap <leader>ga :call ToggleHiddenAll()<CR> :echo<cr>
+nnoremap <leader>lc :let @+=@:<CR>
+
 nnoremap gnn :call GetFileName()<cr>
+nnoremap gwx <C-w>o
+
+" make string a cool variable name
+nnoremap gdr :.s/\\(^\\\|\\([A-z]\\)\\@<=\\).\\{-}\\($\\\|[A-z]\\)\\@=//g<cr> :nohl<cr> :echo<cr>
 
 
 " nnoremap ger :call EasyFindReplace("<C-R><C-W>", "<C-R><C-W>")
@@ -175,20 +178,7 @@ nnoremap dgp d/)<CR> :nohl<cr>bbw
 nnoremap dgb d/}<CR> :nohl<cr>bbw
 nnoremap dgq d/"<CR> :nohl<cr>bbw
 
-" nnoremap cgm c/)<CR> :nohl<cr>bbw
-" nnoremap cgm c/\()\|}\)<CR> :nohl<cr>bbw
 
-
-" less latency, between giv, and giiv. possibly change later
-" nnoremap giiv F=f"lvi"
-" nnoremap giic F=f"lci"
-
-" vnoremap giv <esc>f=f"lvi"
-" nnoremap giv f=f"1lvi"
-" nnoremap gic f=f"1lci"
-
-
-"" tests " another test " thing"
 
 
 
@@ -246,6 +236,8 @@ Plugin 'ervandew/supertab'
 Plugin 'vim-scripts/L9'
 Plugin 'vim-scripts/FuzzyFinder'
 Plugin 'scrooloose/nerdcommenter'
+Plugin 'nanotech/jellybeans.vim'
+Plugin 'kkoenig/wimproved.vim'
 
 
 
@@ -297,7 +289,11 @@ map <leader>y "*y
 "————————————————————————————————————————————————————————————————————————————
 " Remaps for plugins
 "————————————————————————————————————————————————————————————————————————————
-set number
+" set number
+
+" looks weird, but it only remaps in normal mode
+let g:NumberToggleTrigger="<C-h>"
+
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
 let g:ctrlp_by_filename = 1
 let g:ctrlp_use_caching = 0
@@ -310,7 +306,12 @@ let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let NERDTreeShowHidden=1
 au VimEnter * RainbowParentheses
 let g:rainbow#max_level = 16
-let g:ctrlp_mruf_max = 500
+let g:ctrlp_mruf_max = 1000
+
+
+
+
+
 
 " more plugin remaps
 nnoremap gnh :silent Glog -- %<CR> :cw<CR> G
@@ -320,23 +321,20 @@ nnoremap gnl :call LineHistory()
 
 
 
-function! LineHistory()
-    let f_path = expand('%:p')
-
-    :execute "silent Git! log -L " . line(".") . "," . line(".") . ":" . f_path
-endfunction
-
-
 function! MethodHistory(regex)
-    let f_path = expand('%:p')
+    let f_path = split(expand('%:p'), '\')
+    let f_path2 = remove(f_path, 3, len(f_path)-1)
+    let fileNamePathInRepo = join(f_path2, "/")
 
-    :execute "silent Git! log -L :" . a:regex . ":" . f_path
+    :execute "silent Git! log -L :" . a:regex . ":" . fileNamePathInRepo
 endfunction
 
+function! LineHistory()
+    let f_path = split(expand('%:p'), '\')
+    let f_path2 = remove(f_path, 3, len(f_path)-1)
+    let fileNamePathInRepo = join(f_path2, "/")
 
-nnoremap gwo :call ClearAllBuffers()<cr>
-function! ClearAllBuffers()
-    :%bd|e#
+    :execute "silent Git! log -L " . line(".") . "," . line(".") . ":" . fileNamePathInRepo
 endfunction
 
 
@@ -348,19 +346,11 @@ let loaded_matchparen = 1
 
 
 
-
-
-
-
 setlocal foldexpr=matchstr(substitute(getline(v:lnum),'\|.*','',''),'^.*/')==#matchstr(substitute(getline(v:lnum+1),'\|.*','',''),'^.*/')?1:'<1'
 
 
 
 
-
-
-
-hi MatchParen term=bold ctermbg=Red
 " unique colors, in powershell with monokai theme 
 " white, yellow, red, cyan, green, darkgray, darkmagenta
 
@@ -369,8 +359,9 @@ hi MatchParen term=bold ctermbg=Red
 "————————————————————————————————————————————————————————————————————————————
 " vsvim (visual studio) and terminal keymaps
 "————————————————————————————————————————————————————————————————————————————
-" if this is a terminal (including mingw )
+" if this is a terminal (including mingw ) OR gvim
 if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_running')
+
     " used to be nnoremap go viw"0p
     nnoremap go viw"0p
 
@@ -387,12 +378,18 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
     noremap n :set nohlsearch\|:call SearchNext()<CR>
     noremap N :set nohlsearch\|:call SearchPrev()<CR>
 
+    " specifically gvim
     if has('gui_running')
+        " startup window size
+        set lines=40 columns=150
+
         colorscheme molokai
-        set guioptions-=m  "remove menu bar
+        " set guioptions-=m  "remove menu bar
         set guioptions-=T  "remove toolbar
         set guioptions-=L  
+	    set guifont=Source_Code_Pro_Semibold:h10:cANSI:qDRAFT
 
+        " text highlighting
         hi Visual  guifg=Black guibg=white
     endif
 else
@@ -400,6 +397,10 @@ else
     nnoremap go viwP
     nnoremap / /\c
 endif     
+
+" For going full screen in gvim (without Conemu :^/)
+":autocmd GUIEnter * call libcallnr("gvimfullscreen_64.dll", "ToggleFullScreen", 0)
+map <F11> :call libcallnr("gvimfullscreen_64.dll", "ToggleFullScreen", 0)<CR> 
 
 
 
@@ -459,22 +460,6 @@ function! GrepInProjectUnderCursor(regex)
 endfunction
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-let g:fuf_file_exclude = '\v\~$|\.o$|\.exe$|\.bak$|\.xml$|\.cs$'
 
 
 
@@ -617,17 +602,23 @@ endfunction
 
 
 function! ClipboardServer()
-    let aVar = @+
-    exe "normal \,s" . aVar
+    let currentClipboard = @+
+
+    exe "normal \,s"
+    exe "normal g)"
 endfunction
 
 function! ClipboardClient()
-    let aVar = @+
-    exe "normal \,c" . aVar
+    let currentClipboard = @+
+
+    exe "normal \,c"
+    exe "normal g)"
 endfunction
 
 
-
+let g:ctrlp_prompt_mappings = {
+    \ 'PrtInsert("c")':       ['g)'],
+    \ }
 
 
 
@@ -641,38 +632,26 @@ endfunction
 nnoremap gni :call SimilarFile()<cr>
 nnoremap guc :call UnderCursorInRepo("<C-R><C-W>")<cr>
 
-function! UnderCursorInRepo(cursorWord)
-    let word = a:cursorWord
-
-    if IsClient() == 1
-        exe "normal \,c" . word
-    else
-        exe "normal \,s" . word
-    endif
-endfunction
-
-
-
-
-
-
-
-
-
 function! SimilarFile()
     let currentFile = expand("%:t")
+    let currentClipboard = @+
 
     if IsClient() == 1
         if currentFile =~ ".*View.xaml"
             " extract View.xaml piece of file name.
             let currentFile = strpart(currentFile, 0, len(currentFile)-5)
             let viewmodel = currentFile . "Model.cs"
-            exe "normal \,c" . viewmodel
+
+            let @+ = viewmodel
         elseif currentFile =~ ".*ViewModel.cs"
             let currentFile = strpart(currentFile, 0, len(currentFile)-8)
             let view = currentFile . ".xaml"
-            exe "normal \,c" . view
+
+            let @+ = view
         endif
+
+        exe "normal \,c" 
+        exe "normal g)"
     else
         if currentFile =~ ".cs"
             let currentFile = strpart(currentFile, 0, len(currentFile)-3)
@@ -688,9 +667,35 @@ function! SimilarFile()
             endif
         endif
 
-        exe "normal \,s" . currentFile
+        let @+ = currentFile
+        exe "normal \,s"
+        exe "normal g)"
     endif
+
+    let @+ = currentClipboard
 endfunction
+
+function! UnderCursorInRepo(cursorWord)
+    let currentClipboard = @+
+
+    let word = a:cursorWord
+    let @+ = word
+
+    if IsClient() == 1
+        exe "normal \,c"
+    else
+        exe "normal \,s"
+    endif
+    
+    exe "normal g)"
+    let @+ = currentClipboard
+endfunction
+
+
+
+
+
+
 
 
 
@@ -715,229 +720,56 @@ endfunction
 
 
 
-
-
-nnoremap <leader>t :call AnotherTest()<CR>
-function! AnotherTest()
-    let userInput = 'BMM'
-    let aListOfStuff = ['C:\src\what\something\yeah\BethelMemberManager.cs', 'C:\src\what\something\yeah\TrainingSchoolClassManager.cs', 'C:\src\what\something\yeah\DepartmentSummaryManager.cs']
-    let array = []
-
-    for thing in aListOfStuff
-        let a = split(thing, '\')
-        let aIndex = len(a)-1
-        let fileName = a[aIndex]
-        
-        let searchSplitUp = filter(split(toupper(userInput), '\zs'), 'v:val =~ "\\w"')
-
-        echo join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '')
-        let theregex = join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '')
-
-        if fileName =~# theregex
-            cal add(array, thing)
-        endif
-     endfor
-
-     echo array
-endfunction
-
-
-
-
-
-
-
-
-"let g:ctrlp_match_func = { 'match': 'TestFunction' }
-function! TestFunction(items, str, limit, mmode, ispath, crfile, regex)
-    let array = []
-    let userInput = input(a:str)
-
-    for thing in a:items
-        let a = split(thing, '\')
-        let aIndex = len(a)-1
-        let fileName = a[aIndex]
-        
-        let searchSplitUp = filter(split(toupper(userInput), '\zs'), 'v:val =~ "\\w"')
-
-        echo join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '')
-        let theregex = join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '')
-
-        if fileName =~# theregex
-            cal add(array, thing)
-        endif
-     endfor
-
-     return array
-endfunction
-
-
-
-
-
-
-
-
-
-nnoremap <expr> <leader>/ SearchCamelCase('/')
-nnoremap <expr> <leader>? SearchCamelCase('?')
-function! SearchCamelCase(dir)
-    call inputsave()
-    let ab = input(a:dir)
-    call inputrestore()
-    let searchSplitUp = filter(split(toupper(ab), '\zs'), 'v:val =~ "\\w"')
-    if len(searchSplitUp) > 0
-        let searchSplitUp[0] = '[' . searchSplitUp[0] . tolower(searchSplitUp[0]) . ']'
-    end
-    let @/ = '\C\<' . join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '') . '\>' 
-
-    return a:dir . "\r"
-endfunction
-
-
-
-" let g:path_to_matcher = "C:/src/profiles/matcher/matcher"
-" let g:ctrlp_match_func = { 'match': 'GoodMatch' }
-
-function! GoodMatch(items, str, limit, mmode, ispath, crfile, regex)
-
-  " Create a cache file if not yet exists
-  let cachefile = ctrlp#utils#cachedir().'/matcher.cache'
-  if !( filereadable(cachefile) && a:items == readfile(cachefile) )
-    call writefile(a:items, cachefile)
-  endif
-  if !filereadable(cachefile)
-    return []
-  endif
-
-  " a:mmode is currently ignored. In the future, we should probably do
-  " something about that. the matcher behaves like "full-line".
-  let cmd = g:path_to_matcher.' --limit '.a:limit.' --manifest '.cachefile.' '
-  if !( exists('g:ctrlp_dotfiles') && g:ctrlp_dotfiles )
-    let cmd = cmd.'--no-dotfiles '
-  endif
-  let cmd = cmd.a:str
-
-  return split(system(cmd), "\n")
-
-endfunction
-
-" let g:ctrlp_match_func = { 'match': 'Function_Name' }
-function! Function_Name(items, str, limit, mmode, ispath, crfile, regex)
-" Arguments:
-" |
-" +- a:items  : The full list of items to search in.
-" |
-" +- a:str    : The string entered by the user.
-" |
-" +- a:limit  : The max height of the match window. Can be used to limit
-" |             the number of items to return.
-" |
-" +- a:mmode  : The match mode. Can be one of these strings:
-" |             + "full-line": match the entire line.
-" |             + "filename-only": match only the filename.
-" |             + "first-non-tab": match until the first tab char.
-" |             + "until-last-tab": match until the last tab char.
-" |
-" +- a:ispath : Is 1 when searching in file, buffer, mru, mixed, dir, and
-" |             rtscript modes. Is 0 otherwise.
-" |
-" +- a:crfile : The file in the current window. Should be excluded from the
-" |             results when a:ispath == 1.
-" |
-" +- a:regex  : In regex mode: 1 or 0.
-
-    return
-
-    let userInput = input(a:str)
-
-    let array = []
-    for thing in a:items
-        let a = split(thing, '\')
-        let aIndex = len(a)-1
-        let fileName = a[aIndex]
-        
-        let searchSplitUp = filter(split(toupper(userInput), '\zs'), 'v:val =~ "\\w"')
-        let searchSplitUp[0] = '[' . searchSplitUp[0] . tolower(searchSplitUp[0]) . ']'
-
-        let theregex = join(map(searchSplitUp, 'v:val . "[0-9a-z_]*"'), '')
-
-        if fileName =~ theregex
-            cal add(array, thing)
-        endif
-     endfor
-  return array
-endfunction
-
-fu! What(lines, input, limit, mmode, ispath, crfile, regex)
-  if a:input == ''
-    " Clear matches, that left from previous matches
-    cal clearmatches()
-    " Hack to clear s:savestr flag in SplitPattern, otherwise matching in
-    " 'tag' mode will work only from 2nd char.
-    cal ctrlp#call('s:SplitPattern', '')
-    let array = a:lines[0:a:limit]
-    if a:ispath && !empty(a:crfile)
-      cal remove(array, index(array, a:crfile))
-    en
-    return array
-  el
-    if a:regex
-      let array = []
-      let func = a:mmode == "filename-only" ? 's:matchfname' : 'match'
-      for item in a:lines
-        if call(func, [item, a:input]) >= 0
-          cal add(array, item)
-        endif
-      endfor
-      cal sort(array, ctrlp#call('s:mixedsort'))
-      cal s:highlight(a:input, a:mmode, a:regex)
-      return array
+let s:hidden_all = 0
+function! ToggleHiddenAll()
+    if s:hidden_all  == 0
+        let s:hidden_all = 1
+        set noshowmode
+        set noruler
+        set laststatus=0
+        set noshowcmd
+    else
+        let s:hidden_all = 0
+        set showmode
+        set ruler
+        set laststatus=2
+        set showcmd
     endif
-    " use built-in matcher if mmode set to match until first tab ( in other case
-    " tag.vim doesnt work
-    if a:mmode == "first-non-tab"
-      let array = []
-      " call ctrlp.vim function to get proper input pattern
-      let pat = ctrlp#call('s:SplitPattern', a:input)
-      for item in a:lines
-        if call('s:matchtabs', [item, pat]) >= 0
-          cal add(array, item)
-        en
-      endfo
-      "TODO add highlight
-      cal sort(array, ctrlp#call('s:mixedsort'))
-      return array
-    en
+endfunction
 
-    let matchlist = s:cmatcher(a:lines, a:input, a:limit, a:mmode, a:ispath, a:crfile)
-  en
 
-  cal s:highlight(a:input, a:mmode, a:regex)
 
-  return matchlist
-endf
 
-fu! s:cmatcher(lines, input, limit, mmode, ispath, crfile)
-python << EOF
-lines = vim.eval('a:lines')
-searchinp = vim.eval('a:input')
-limit = int(vim.eval('a:limit'))
-mmode = vim.eval('a:mmode')
-ispath = int(vim.eval('a:ispath'))
-crfile = vim.eval('a:crfile')
 
-if ispath and crfile:
-  try:
-    lines.remove(crfile)
-  except ValueError:
-    pass
+" specifically for vim in conemu 
+if !empty($CONEMUBUILD)
+    set mouse=a
+    set term=xterm
+    " perhaps `nocompatible` is not required
+    set nocompatible
+    set t_Co=256
+    let &t_AB="\e[48;5;%dm"
+    let &t_AF="\e[38;5;%dm"
 
-try:
-  # TODO we should support smartcase. Needs some fixing on matching side
-  matchlist = fuzzycomt.sorted_match_list(lines, searchinp.lower(), limit, mmode)
-except:
-  matchlist = []
-EOF
-return s:pyeval("matchlist")
-endf
+    let &showbreak = ' ~~ '
+    colorscheme molokai
+    hi Visual  ctermfg=white ctermbg=darkmagenta
+    
+    " weird options for using ConeEmu with xterm set
+    inoremap <Char-0x07F> <BS>
+    nnoremap <Char-0x07F> <BS>
+    cnoremap <Char-0x07F> <BS>
+
+    let g:ctrlp_prompt_mappings = {
+        \ 'PrtInsert("c")':       ['g)'],
+        \ 'PrtBS()': ['<Char-0x07F>', '<c-h>']
+    \ }
+endif
+
+
+
+
+
+
+
+
