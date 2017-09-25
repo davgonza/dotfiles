@@ -51,6 +51,7 @@ nnoremap <leader>x :NERDTreeFind<cr> :redraw!<cr>
 nnoremap <leader>s :CtrlP C:\\SRC\\Admin\\JW.Admin.Server<cr>
 nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
+" nnoremap <leader>r :CtrlPLastMode C:\\SRC\\Admin<cr>
 nnoremap <leader><tab> :NERDTreeFocus<cr> :redraw!<cr>
 
 " for focusing quickfix window
@@ -82,7 +83,9 @@ nnoremap vv V
 
 onoremap l g$
 onoremap h g^
-onoremap 8 aW
+onoremap 8 iW
+nnoremap d8 daW
+
 onoremap q i"
 onoremap s i'
 onoremap m i(
@@ -134,6 +137,8 @@ vmap gh <esc>
 nnoremap gwl <C-w>v
 nnoremap gwj <c-w>s
 nnoremap gwu <c-w>q
+nnoremap gtu :tabclose<CR>
+
 nnoremap g/ /<c-r>*<cr>
 nnoremap <silent>gw- :exe "15winc >"<CR>
 nnoremap <silent>gw[ :exe "15winc <"<CR>
@@ -150,6 +155,7 @@ nnoremap gy *Nciw
 nnoremap gnd :cd %:p:h<CR>
 nnoremap ga 1hi<space>
 nnoremap gnf :let @+ = expand("%:p")<cr>
+nnoremap gsn :sav ~/notes/
 
 
 nnoremap gpu :call GrepInProjectUnderCursor("<C-R><C-W>")<left><left>
@@ -166,7 +172,8 @@ nnoremap <leader>ga :call ToggleHiddenAll()<CR> :echo<cr>
 nnoremap <leader>lc :let @+=@:<CR>
 
 nnoremap gnn :call GetFileName()<cr>
-nnoremap gwx <C-w>o
+nnoremap gw8 <C-w>o
+" nnoremap gnc L <C-d><C-d><C-o>gg<C-o>zzj
 
 " make string a cool variable name
 nnoremap gdr :.s/\\(^\\\|\\([A-z]\\)\\@<=\\).\\{-}\\($\\\|[A-z]\\)\\@=//g<cr> :nohl<cr> :echo<cr>
@@ -225,7 +232,6 @@ Plugin 'kien/ctrlp.vim'
 Plugin 'junegunn/rainbow_parentheses.vim'
 Plugin 'tpope/vim-abolish'
 Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
-Plugin 'ryanoasis/vim-devicons'
 Plugin 'tpope/vim-fugitive'
 Plugin 'farmergreg/vim-lastplace'
 
@@ -238,6 +244,7 @@ Plugin 'vim-scripts/FuzzyFinder'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'nanotech/jellybeans.vim'
 Plugin 'kkoenig/wimproved.vim'
+Plugin 'ryanoasis/vim-devicons'
 
 
 
@@ -276,7 +283,7 @@ map <leader>y "*y
 "————————————————————————————————————————————————————————————————————————————
 " Colors + Themes
 "————————————————————————————————————————————————————————————————————————————
-" Setting the theme for VIM in powershell is kind of cumbersome, basically:
+" Setting the theme for Vim in powershell is kind of cumbersome, basically:
 "————————————————————————————————————————————————————————————————————————————
 " download registry file here: https://github.com/reideast/cmd-colors-monokai
 " and then "regedit /s C:\SRC\even_folder\monokai.reg"
@@ -309,7 +316,7 @@ let g:rainbow#max_level = 16
 let g:ctrlp_mruf_max = 1000
 
 
-
+  
 
 
 
@@ -340,6 +347,8 @@ endfunction
 
 
 let loaded_matchparen = 1 
+nnoremap <S-Return> gnc
+nnoremap gnc ggVG<ESC><C-o> 
 
 
 
@@ -359,7 +368,8 @@ setlocal foldexpr=matchstr(substitute(getline(v:lnum),'\|.*','',''),'^.*/')==#ma
 "————————————————————————————————————————————————————————————————————————————
 " vsvim (visual studio) and terminal keymaps
 "————————————————————————————————————————————————————————————————————————————
-" if this is a terminal (including mingw ) OR gvim
+" if this is a terminal (including mingw ) OR gvim. Basically if 
+" it's not VsVim (Vim for visual studio)
 if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_running')
 
     " used to be nnoremap go viw"0p
@@ -378,7 +388,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
     noremap n :set nohlsearch\|:call SearchNext()<CR>
     noremap N :set nohlsearch\|:call SearchPrev()<CR>
 
-    " specifically gvim
+    " NOTE: specifically gvim
     if has('gui_running')
         " startup window size
         set lines=40 columns=150
@@ -392,11 +402,68 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " text highlighting
         hi Visual  guifg=Black guibg=white
     endif
+
+    " NOTE: specifically for vim in conemu 
+    if !empty($CONEMUBUILD)
+        set mouse=a
+        set term=xterm
+        " perhaps `nocompatible` is not required
+        set nocompatible
+        set t_Co=256
+        let &t_AB="\e[48;5;%dm"
+        let &t_AF="\e[38;5;%dm"
+
+        let &showbreak = ' ~~ '
+
+        " this part is pretty nice, because ConEmu can have its own colorscheme,
+        " but as soon as Vim gets activated, this colorscheme will take over
+        " currently using <Solarized Git> in ConEmu, molokai in Vim
+        colorscheme monokai
+        hi Visual  ctermfg=black ctermbg=magenta 
+        hi Search ctermfg=yellow ctermbg=blue
+
+        " weird options for using ConeEmu with xterm set
+        " This will sometimes cause characters to be entered, when scrolling
+        " really fast through a document. Must set "ttimeoutlen" to small value
+        inoremap <Char-0x07F> <BS>
+        nnoremap <Char-0x07F> <BS>
+        cnoremap <Char-0x07F> <BS>
+
+        let g:ctrlp_prompt_mappings = {
+            \ 'PrtInsert("c")':       ['g)'],
+            \ 'PrtBS()': ['<Char-0x07F>', '<c-h>']
+        \ }
+        
+        " Must set "ttimeoutlen" to small value
+        set timeoutlen=500 ttimeoutlen=50
+
+        execute "set <M-j>=^[j"
+        nnoremap <M-j> <C-w>j
+
+        set <M-k>=^[k
+        nnoremap <M-k> <C-w>k
+
+        set <M-h>=^[h
+        nnoremap <M-h> <C-w>h
+
+        set <M-l>=^[l
+        nnoremap <M-l> <C-w>l
+
+    else
+        " Else, if it's not ConEmu, I want this mapping to work with others
+        " like Gvim, Powershell, etc. 
+        " Basically, still in the Shell, just NOT conemu
+        let g:ctrlp_prompt_mappings = {
+            \ 'PrtInsert("c")':       ['g)'],
+            \ }
+    endif
+
 else
     " visual studio
     nnoremap go viwP
     nnoremap / /\c
 endif     
+
 
 " For going full screen in gvim (without Conemu :^/)
 ":autocmd GUIEnter * call libcallnr("gvimfullscreen_64.dll", "ToggleFullScreen", 0)
@@ -616,10 +683,6 @@ function! ClipboardClient()
 endfunction
 
 
-let g:ctrlp_prompt_mappings = {
-    \ 'PrtInsert("c")':       ['g)'],
-    \ }
-
 
 
 
@@ -741,30 +804,6 @@ endfunction
 
 
 
-" specifically for vim in conemu 
-if !empty($CONEMUBUILD)
-    set mouse=a
-    set term=xterm
-    " perhaps `nocompatible` is not required
-    set nocompatible
-    set t_Co=256
-    let &t_AB="\e[48;5;%dm"
-    let &t_AF="\e[38;5;%dm"
-
-    let &showbreak = ' ~~ '
-    colorscheme molokai
-    hi Visual  ctermfg=white ctermbg=darkmagenta
-    
-    " weird options for using ConeEmu with xterm set
-    inoremap <Char-0x07F> <BS>
-    nnoremap <Char-0x07F> <BS>
-    cnoremap <Char-0x07F> <BS>
-
-    let g:ctrlp_prompt_mappings = {
-        \ 'PrtInsert("c")':       ['g)'],
-        \ 'PrtBS()': ['<Char-0x07F>', '<c-h>']
-    \ }
-endif
 
 
 
