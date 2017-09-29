@@ -146,23 +146,21 @@ nnoremap <silent>gw= :exe "15winc +"<CR>
 nnoremap <silent>gw] :exe "15winc -"<CR>
 nnoremap gif :e $MYVIMRC<cr>
 nnoremap gqr :w<cr> :so %<cr> :nohl<cr> :echo<cr>
-nnoremap gm vi(p
-nnoremap gs vi'p
-nnoremap gq vi"p
+" nnoremap gm vi(p
+" nnoremap gs vi'p
+" nnoremap gq vi"p
 nnoremap gr @:
 nnoremap g0 :wqa<cr>
 nnoremap gy *Nciw
 nnoremap gnd :cd %:p:h<CR>
 nnoremap ga 1hi<space>
 nnoremap gnf :let @+ = expand("%:p")<cr>
-nnoremap gsn :sav ~/notes/
+nnoremap g<SPACE>n :sav ~/notes/
 
 
-nnoremap gpu :call GrepInProjectUnderCursor("<C-R><C-W>")<left><left>
-nnoremap gpf :call GrepInProjectFree("")<left><left>
+nnoremap gp :call GrepInProject("")<left><left>
 
-nnoremap gsu :call GrepInSolution("<C-R><C-W>", "*.xaml")<left><left>
-nnoremap gsf :call GrepInSolutionFree("", "*.cs")<left><left><left><left><left><left><left><left><left><left>
+nnoremap <expr> gs IsClient() == 1 ? ":call GrepInSolution('', '*.cs,*.xaml')<left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left>" : ":call GrepInSolution('', '*.xml,*.cs')<left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left>"
 
 nnoremap gio :call GrepInOtherProject("<C-R><C-W>", "Bethel Field Education Persons")<left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left>
 
@@ -316,8 +314,6 @@ let g:rainbow#max_level = 16
 let g:ctrlp_mruf_max = 1000
 
 
-  
-
 
 
 " more plugin remaps
@@ -462,6 +458,10 @@ else
     " visual studio
     nnoremap go viwP
     nnoremap / /\c
+
+    " mapped before, now just remapping for vs
+    onoremap l $
+    onoremap h ^
 endif     
 
 
@@ -507,11 +507,11 @@ function! GetFileName()
     echo "copied " . "'" . fileName . "'" . " to clipboard"
 endfunction
 
-function! GrepInProjectFree(searchPattern)
+function! RandomMethod(searchPattern)
     call GrepInProjectUnderCursor(a:searchPattern)
 endfunction
 
-function! GrepInProjectUnderCursor(regex)
+function! GrepInProject(regex)
     let f_path = split(expand('%:p:h'), '\')
     call remove(f_path, 5, len(f_path)-1)
     let cproject = join(f_path, "/")
@@ -565,34 +565,31 @@ endfunction
 
 
 
-function! GrepInSolutionFree(searchPattern, additionalFileFilter)
-    call GrepInSolution(a:searchPattern, a:additionalFileFilter)
-endfunction
-
-function! GrepInSolution(regex, additionalFileFilter)
+function! GrepInSolution(regex, singleFilter)
     let f_path = split(expand('%:p:h'), '\')
     call remove(f_path, 4, len(f_path)-1)
     let solution = join(f_path, "/")
 
     let solution = strpart(solution, 0, len(solution)-6)
 
+    let includeStr = ''
+
+    let filters = split(a:singleFilter, ',')
+    let toCount = len(filters) - 1
+
+    for i in range(0, toCount) 
+        let includeStr = includeStr . '--include \' . filters[i]
+        let includeStr = includeStr . ' '
+        let i = i + 1
+    endfor
+
     if IsClient() == 1
         let solution = solution . "Client"
-
-        if len(a:additionalFileFilter) >= 0
-            :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\" . a:additionalFileFilter . " --exclude-dir=obj --exclude-dir=bin"
-        else
-            :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin"
-        endif
     else
         let solution = solution . "Server"
-
-        if len(a:additionalFileFilter) >= 0
-            :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\" . a:additionalFileFilter . " --exclude-dir=obj --exclude-dir=bin"
-        else
-            :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin"
-        endif
     endif
+    
+    :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "'" . " " . includeStr . " --exclude-dir=obj --exclude-dir=bin --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
 
     :execute "cw"
     :execute "normal \,b"
