@@ -40,7 +40,10 @@ behave mswin
 nnoremap s :w<cr>
 nnoremap <space> :
 
+" clipboard
+" let @+ =
 
+" uses git for indexing, and provides a faster prompt overall
 nnoremap <leader>a gg"*yG<c-o><c-o>zz
 nnoremap <leader>b <c-w>p
 nnoremap <leader>e :nohl<cr> :echo<cr>
@@ -137,7 +140,7 @@ vmap gh <esc>
 nnoremap gwl <C-w>v
 nnoremap gwj <c-w>s
 nnoremap gwu <c-w>q
-nnoremap gtu :tabclose<CR>
+nnoremap gyu :tabclose<CR>
 
 nnoremap g/ /<c-r>*<cr>
 nnoremap <silent>gw- :exe "15winc >"<CR>
@@ -156,6 +159,7 @@ nnoremap gnd :cd %:p:h<CR>
 nnoremap ga 1hi<space>
 nnoremap gnf :let @+ = expand("%:p")<cr>
 nnoremap g<SPACE>n :sav ~/notes/
+nnoremap g<SPACE>b :Gblame<CR> <C-w>o
 
 
 nnoremap gp :call GrepInProject("")<left><left>
@@ -183,7 +187,7 @@ nnoremap dgp d/)<CR> :nohl<cr>bbw
 nnoremap dgb d/}<CR> :nohl<cr>bbw
 nnoremap dgq d/"<CR> :nohl<cr>bbw
 
-
+source ~/vimfiles/bundle/colorstepper/colorstepper.vim
 
 
 
@@ -232,6 +236,7 @@ Plugin 'tpope/vim-abolish'
 Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plugin 'tpope/vim-fugitive'
 Plugin 'farmergreg/vim-lastplace'
+
 
 " Plugin 'OmniSharp/omnisharp-vim'
 Plugin 'tpope/vim-dispatch'
@@ -311,7 +316,7 @@ let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let NERDTreeShowHidden=1
 au VimEnter * RainbowParentheses
 let g:rainbow#max_level = 16
-let g:ctrlp_mruf_max = 1000
+let g:ctrlp_mruf_max = 2000
 
 
 
@@ -343,7 +348,7 @@ endfunction
 
 
 let loaded_matchparen = 1 
-nnoremap <S-Return> gnc
+" nnoremap <S-Return> gnc
 nnoremap gnc ggVG<ESC><C-o> 
 
 
@@ -414,9 +419,11 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " this part is pretty nice, because ConEmu can have its own colorscheme,
         " but as soon as Vim gets activated, this colorscheme will take over
         " currently using <Solarized Git> in ConEmu, molokai in Vim
-        colorscheme monokai
+        colorscheme molokai
+
         hi Visual  ctermfg=black ctermbg=magenta 
         hi Search ctermfg=yellow ctermbg=blue
+        hi Comment ctermfg=900 ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
 
         " weird options for using ConeEmu with xterm set
         " This will sometimes cause characters to be entered, when scrolling
@@ -507,9 +514,14 @@ function! GetFileName()
     echo "copied " . "'" . fileName . "'" . " to clipboard"
 endfunction
 
-function! RandomMethod(searchPattern)
-    call GrepInProjectUnderCursor(a:searchPattern)
-endfunction
+
+
+
+
+
+
+
+
 
 function! GrepInProject(regex)
     let f_path = split(expand('%:p:h'), '\')
@@ -517,10 +529,43 @@ function! GrepInProject(regex)
     let cproject = join(f_path, "/")
 
     if IsClient() == 1
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin"
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     else
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin"
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     endif
+
+    :execute "cw"
+    :execute "normal \,b"
+endfunction
+
+
+
+
+function! GrepInSolution(regex, singleFilter)
+    let f_path = split(expand('%:p:h'), '\')
+    call remove(f_path, 4, len(f_path)-1)
+    let solution = join(f_path, "/")
+
+    let solution = strpart(solution, 0, len(solution)-6)
+
+    let includeStr = ''
+
+    let filters = split(a:singleFilter, ',')
+    let toCount = len(filters) - 1
+
+    for i in range(0, toCount) 
+        let includeStr = includeStr . '--include \' . filters[i]
+        let includeStr = includeStr . ' '
+        let i = i + 1
+    endfor
+
+    if IsClient() == 1
+        let solution = solution . "Client"
+    else
+        let solution = solution . "Server"
+    endif
+
+    :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "'" . " " . includeStr . " --exclude-dir=obj --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
 
     :execute "cw"
     :execute "normal \,b"
@@ -564,36 +609,6 @@ endfunction
 
 
 
-
-function! GrepInSolution(regex, singleFilter)
-    let f_path = split(expand('%:p:h'), '\')
-    call remove(f_path, 4, len(f_path)-1)
-    let solution = join(f_path, "/")
-
-    let solution = strpart(solution, 0, len(solution)-6)
-
-    let includeStr = ''
-
-    let filters = split(a:singleFilter, ',')
-    let toCount = len(filters) - 1
-
-    for i in range(0, toCount) 
-        let includeStr = includeStr . '--include \' . filters[i]
-        let includeStr = includeStr . ' '
-        let i = i + 1
-    endfor
-
-    if IsClient() == 1
-        let solution = solution . "Client"
-    else
-        let solution = solution . "Server"
-    endif
-    
-    :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "'" . " " . includeStr . " --exclude-dir=obj --exclude-dir=bin --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
-
-    :execute "cw"
-    :execute "normal \,b"
-endfunction
 
 
 
