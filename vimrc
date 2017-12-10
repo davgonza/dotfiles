@@ -95,10 +95,7 @@ onoremap m i(
 vnoremap m i(
 nnoremap vm %vi(
 nnoremap cm %ci(
-" nnoremap <cr> f(l
-" inoremap S-CR> <CR>k
 
-" some random test (between ) and more text here (ok more )
 inoremap <S-CR> <CR><C-o>k
 
 vnoremap 8 iW
@@ -149,16 +146,25 @@ nnoremap <silent>gw= :exe "15winc +"<CR>
 nnoremap <silent>gw] :exe "15winc -"<CR>
 nnoremap gif :e $MYVIMRC<cr>
 nnoremap gqr :w<cr> :so %<cr> :nohl<cr> :echo<cr>
-" nnoremap gm vi(p
-" nnoremap gs vi'p
-" nnoremap gq vi"p
 nnoremap gr @:
 nnoremap g0 :wqa<cr>
 nnoremap gy *Nciw
 nnoremap gnd :cd %:p:h<CR>
 nnoremap ga 1hi<space>
 nnoremap gnf :let @+ = expand("%:p")<cr>
-nnoremap g<SPACE>n :sav ~/notes/
+nnoremap g9n :sav ~/notes/
+nnoremap g9t :tabnew<CR>
+
+
+"nnoremap g9g :call NewFileName()<CR>
+"function! NewFileName()
+    "let currentTime = strftime('%H-%M-%S')
+    ":tabnew
+
+    "let fFileName = '~/notes/newnote' . '/' . currentTime
+    ":echo fFileName . 'What'
+"endfunc
+
 nnoremap g<SPACE>b :Gblame<CR> <C-w>o
 
 
@@ -175,22 +181,26 @@ nnoremap <leader>lc :let @+=@:<CR>
 
 nnoremap gnn :call GetFileName()<cr>
 nnoremap gw8 <C-w>o
-" nnoremap gnc L <C-d><C-d><C-o>gg<C-o>zzj
 
 " make string a cool variable name
 nnoremap gdr :.s/\\(^\\\|\\([A-z]\\)\\@<=\\).\\{-}\\($\\\|[A-z]\\)\\@=//g<cr> :nohl<cr> :echo<cr>
 
 
-" nnoremap ger :call EasyFindReplace("<C-R><C-W>", "<C-R><C-W>")
 
 nnoremap dgp d/)<CR> :nohl<cr>bbw
 nnoremap dgb d/}<CR> :nohl<cr>bbw
 nnoremap dgq d/"<CR> :nohl<cr>bbw
+nnoremap dg; d/;<CR> :nohl<cr>bbw
+
+nnoremap cgp c/)<CR> <ESC>:nohl<cr>xi
+nnoremap cgb c/}<CR> <ESC>:nohl<cr>xi
+nnoremap cgq c/"<CR> <ESC>:nohl<cr>xi
+nnoremap cg; c/;<CR> <ESC>:nohl<cr>xi
 
 source ~/vimfiles/bundle/colorstepper/colorstepper.vim
 
 
-
+" )
 
 
 
@@ -248,6 +258,10 @@ Plugin 'scrooloose/nerdcommenter'
 Plugin 'nanotech/jellybeans.vim'
 Plugin 'kkoenig/wimproved.vim'
 Plugin 'ryanoasis/vim-devicons'
+Plugin 'tpope/vim-markdown'
+Plugin 'sotte/presenting.vim'
+
+
 
 
 
@@ -268,7 +282,6 @@ filetype plugin indent on            " required
 nnoremap x "_dl
 vnoremap x "_d
 nnoremap dx "_dd
-" nnoremap dy d/\\()\\\|}\\)<CR> :nohl<cr>bbw
 " some test with a parenthesis__)__also a squiggly bracket__}__and then more text
 
 nnoremap X "_D
@@ -299,10 +312,10 @@ map <leader>y "*y
 "————————————————————————————————————————————————————————————————————————————
 " Remaps for plugins
 "————————————————————————————————————————————————————————————————————————————
-" set number
 
 " looks weird, but it only remaps in normal mode
 let g:NumberToggleTrigger="<C-h>"
+
 
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
 let g:ctrlp_by_filename = 1
@@ -315,6 +328,8 @@ let g:NERDTreePatternMatchHighlightFullName = 1
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let NERDTreeShowHidden=1
 au VimEnter * RainbowParentheses
+au VimEnter * execute "normal \<C-h>"
+
 let g:rainbow#max_level = 16
 let g:ctrlp_mruf_max = 2000
 
@@ -348,7 +363,6 @@ endfunction
 
 
 let loaded_matchparen = 1 
-" nnoremap <S-Return> gnc
 nnoremap gnc ggVG<ESC><C-o> 
 
 
@@ -395,7 +409,6 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         set lines=40 columns=150
 
         colorscheme molokai
-        " set guioptions-=m  "remove menu bar
         set guioptions-=T  "remove toolbar
         set guioptions-=L  
 	    set guifont=Source_Code_Pro_Semibold:h10:cANSI:qDRAFT
@@ -459,6 +472,17 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         let g:ctrlp_prompt_mappings = {
             \ 'PrtInsert("c")':       ['g)'],
             \ }
+    endif
+
+    " NOTE: If in Gvim inside ConEmu
+    if has('gui_running') && has('gui_running')
+        :set guioptions-=m
+
+        hi Visual  guifg=black guibg=magenta 
+        hi Search guifg=white guibg=#009999
+        "hi Comment guifg=900 guibg=none gui=none guifg=#75715e guibg=NONE gui=NONE
+
+        let &showbreak = ' ◄◄ '
     endif
 
 else
@@ -812,10 +836,16 @@ function! ToggleHiddenAll()
     endif
 endfunction
 
+" Triple scrolling "speed"
+nnoremap <C-e> 3<C-e>
+nnoremap <C-y> 3<C-y>
 
 
 
 
+
+" TODO: Write plugin for fast copy+paste by taking what lines they've sent in,
+" and pasting them where cursor is currently
 
 
 

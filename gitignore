@@ -10,3 +10,6 @@
 /bin/
 
 C:/src/admin/.gitattributes
+
+# ignore arc hooks directory
+.arc-hooks/*
