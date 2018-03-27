@@ -32,7 +32,6 @@ set wrap
 set cpo=n
 set scrolloff=3
 
-
 syntax on                       " turn syntax highlighting on by default
 filetype off
 behave mswin
@@ -56,6 +55,7 @@ nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
 " nnoremap <leader>r :CtrlPLastMode C:\\SRC\\Admin<cr>
 nnoremap <leader><tab> :NERDTreeFocus<cr> :redraw!<cr>
+map <C-k><C-d> :call NERDComment(0,"toggle")<CR>
 
 " for focusing quickfix window
 nnoremap <leader>q <c-w>b
@@ -117,16 +117,28 @@ let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 
 
 
-if &diff
-    " less confusing diffs...
-    colorscheme bw
-    syntax off
-    hi DiffAdd      cterm=none    ctermfg=White         ctermbg=Green
-    hi DiffChange   cterm=none    ctermfg=White         ctermbg=none
-    hi DiffDelete   cterm=bold    ctermfg=White         ctermbg=red
-    hi DiffText     cterm=none    ctermfg=White         ctermbg=darkmagenta
-endif
-nnoremap g<tab> :wincmd J<cr>
+"if &diff
+    "" less confusing diffs...
+
+    "colorscheme bw
+    "syntax off
+    "hi DiffAdd      cterm=none    ctermfg=White         ctermbg=Green
+    "hi DiffChange   cterm=none    ctermfg=White         ctermbg=none
+    "hi DiffDelete   cterm=bold    ctermfg=White         ctermbg=red
+    "hi DiffText     cterm=none    ctermfg=White         ctermbg=darkmagenta
+
+    "hi DiffAdd      gui=none      guifg=NONE            guibg=#bada9f
+    "hi DiffChange   gui=none      guifg=NONE            guibg=#e5d5ac
+    "hi DiffDelete   gui=bold      guifg=#ff8080         guibg=#ffb0b0
+    "hi DiffText     gui=none      guifg=NONE            guibg=#8cbee2
+
+"endif
+
+
+
+
+
+"nnoremap g<tab> :wincmd J<cr>
 
 
 "————————————————————————————————————————————————————————————————————————————
@@ -139,7 +151,7 @@ nnoremap gwj <c-w>s
 nnoremap gwu <c-w>q
 nnoremap gyu :tabclose<CR>
 
-nnoremap g/ /<c-r>*<cr>
+nnoremap g/ /\\c<c-r>*<cr>
 nnoremap <silent>gw- :exe "15winc >"<CR>
 nnoremap <silent>gw[ :exe "15winc <"<CR>
 nnoremap <silent>gw= :exe "15winc +"<CR>
@@ -154,6 +166,8 @@ nnoremap ga 1hi<space>
 nnoremap gnf :let @+ = expand("%:p")<cr>
 nnoremap g9n :sav ~/notes/
 nnoremap g9t :tabnew<CR>
+" reset encoding
+nnoremap g9e :set bomb<CR>
 
 
 "nnoremap g9g :call NewFileName()<CR>
@@ -261,6 +275,8 @@ Plugin 'ryanoasis/vim-devicons'
 Plugin 'tpope/vim-markdown'
 Plugin 'sotte/presenting.vim'
 
+map <C-tab> <NOP>
+
 
 
 
@@ -363,10 +379,18 @@ endfunction
 
 
 let loaded_matchparen = 1 
-nnoremap gnc ggVG<ESC><C-o> 
+"map <S-CR> mmggVG<ESC>`m
+"map <S-CR> echo 'What'
+"nnoremap <CR> o<Esc>
+"nnoremap <S-CR> i<CR><Esc> " Needed for GVIm
+"map <C-CR> ggVG<ESC>`m
 
+"map <NL> :echo 'what'<CR>
 
+function What()
 
+    :execute "normal Gztgg"
+endfunction
 
 
 
@@ -407,11 +431,12 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
     if has('gui_running')
         " startup window size
         set lines=40 columns=150
+        set guicursor+=n-v-c:blinkon0
 
         colorscheme molokai
         set guioptions-=T  "remove toolbar
         set guioptions-=L  
-	    set guifont=Source_Code_Pro_Semibold:h10:cANSI:qDRAFT
+	    set guifont=Source_Code_Pro_Semibold:h9:cANSI:qDRAFT
 
         " text highlighting
         hi Visual  guifg=Black guibg=white
@@ -480,15 +505,21 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
 
         hi Visual  guifg=black guibg=magenta 
         hi Search guifg=white guibg=#009999
-        "hi Comment guifg=900 guibg=none gui=none guifg=#75715e guibg=NONE gui=NONE
 
         let &showbreak = ' ◄◄ '
+
+        " gvim in conemu, don't add this last mapping
+        let g:ctrlp_prompt_mappings = {
+            \ 'PrtInsert("c")':       ['g)']
+        \ }
+        "\ 'PrtBS()': ['<Char-0x07F>', '<c-h>']
     endif
 
 else
     " visual studio
     nnoremap go viwP
     nnoremap / /\c
+    nnoremap g/ /\c<c-r>*<cr>
 
     " mapped before, now just remapping for vs
     onoremap l $
@@ -529,6 +560,7 @@ endfunction
 
 autocmd Filetype qf setlocal statusline=\ %n\ \ %f%=%L\ lines\ 
 
+
 function! GetFileName()
     let f_path = split(expand('%:p'), '\')
     let aIndex = len(f_path)-1
@@ -554,6 +586,23 @@ function! GrepInProject(regex)
 
     if IsClient() == 1
         :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
+    else
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
+    endif
+
+    :execute "cw"
+    :execute "normal \,b"
+endfunction
+
+
+
+function! GrepInFolder(regex, fileType)
+    let currentFolder = expand('%:p:h')
+
+    let includeStr = includeStr . '--include \' . fileType
+
+    if IsClient() == 1
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . currentFolder . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     else
         :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     endif
@@ -843,14 +892,79 @@ nnoremap <C-y> 3<C-y>
 
 
 
-
 " TODO: Write plugin for fast copy+paste by taking what lines they've sent in,
 " and pasting them where cursor is currently
 
 
+" TODO: Make function, for easy execution of shell commands, (e.g. escape %,
+" insert bang, with double quotes
+"
+" read !git log --stat --since="1 Day Ago" --graph --pretty=format:"\%C(yellow)\%h\%Creset ------------\%C(red)\%d\%Creset \%C(magenta)(\%s) \%C(dim green)(\%cr) \%C(cyan)<\%an>\%Creset" --abbrev-commit --date=relative -30)
 
 
 
 
 
 
+
+
+if has("gui_running")
+  function! ScreenFilename()
+    if has('amiga')
+      return "s:.vimsize"
+    elseif has('win32')
+      return $HOME.'\_vimsize'
+    else
+      return $HOME.'/.vimsize'
+    endif
+  endfunction
+
+  function! ScreenRestore()
+    " Restore window size (columns and lines) and position
+    " from values stored in vimsize file.
+    " Must set font first so columns and lines are based on font size.
+    let f = ScreenFilename()
+    if has("gui_running") && g:screen_size_restore_pos && filereadable(f)
+      let vim_instance = (g:screen_size_by_vim_instance==1?(v:servername):'GVIM')
+      for line in readfile(f)
+        let sizepos = split(line)
+        if len(sizepos) == 5 && sizepos[0] == vim_instance
+          silent! execute "set columns=".sizepos[1]." lines=".sizepos[2]
+          silent! execute "winpos ".sizepos[3]." ".sizepos[4]
+          return
+        endif
+      endfor
+    endif
+  endfunction
+
+  function! ScreenSave()
+    " Save window size and position.
+    if has("gui_running") && g:screen_size_restore_pos
+      let vim_instance = (g:screen_size_by_vim_instance==1?(v:servername):'GVIM')
+      let data = vim_instance . ' ' . &columns . ' ' . &lines . ' ' .
+            \ (getwinposx()<0?0:getwinposx()) . ' ' .
+            \ (getwinposy()<0?0:getwinposy())
+      let f = ScreenFilename()
+      if filereadable(f)
+        let lines = readfile(f)
+        call filter(lines, "v:val !~ '^" . vim_instance . "\\>'")
+        call add(lines, data)
+      else
+        let lines = [data]
+      endif
+      call writefile(lines, f)
+    endif
+  endfunction
+
+  if !exists('g:screen_size_restore_pos')
+    let g:screen_size_restore_pos = 1
+  endif
+  if !exists('g:screen_size_by_vim_instance')
+    let g:screen_size_by_vim_instance = 1
+  endif
+  autocmd VimEnter * if g:screen_size_restore_pos == 1 | call ScreenRestore() | endif
+  autocmd VimLeavePre * if g:screen_size_restore_pos == 1 | call ScreenSave() | endif
+endif
+
+
+"autocmd BufNewFile,BufRead *.txt   set guifont=Consolas:h15:cANSI:qDRAFT|colorscheme zellner|set lines=20 columns=100
