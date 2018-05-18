@@ -89,3 +89,30 @@ LShift Up::Click up
 
 
 
+^SPACE::
+    Send, {ALT DOWN}{TAB}{ALT UP}
+return
+
+#.::WinClose, A
+#,::WinMinimize, A
+; rapid move window
+!=::
+    Sleep,200 
+    Send, {ALTDOWN}{SPACE}{ALTUP}
+    Sleep,200 
+    Send, M
+    Sleep,200 
+    Send, {UP}
+    Send, {DOWN}
+Return
+
+
+
+;program maps
+^-::
+IfWinExist, ahk_exe chrome.exe
+    IfWinActive
+        WinMinimize
+    else
+        WinActivate
+Return
