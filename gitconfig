@@ -49,6 +49,7 @@
     g = git
     qm = "!f() { git add .; git commit -m \"QUICKSAVE\"; }; f"
     us = "branch --set-upstream-to origin/master"
+    diffapply = apply --ignore-space-change --ignore-whitespace 
 
 [color]
     ui = true

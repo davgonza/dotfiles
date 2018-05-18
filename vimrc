@@ -25,6 +25,7 @@ set fileencodings=ucs-bom,utf8,prc
 set statusline=%<%F\ %h%m%r%=%-14.(%l/%L,%c%V%)\ %P 
 let mapleader = ","
 let &showbreak = ' ◄◄ '
+let &showbreak = '>>>>'
 set undodir=~/tmp//
 set backupdir=~/tmp//
 set directory=~/tmp//
@@ -54,17 +55,11 @@ nnoremap <leader>s :CtrlP C:\\SRC\\Admin\\JW.Admin.Server<cr>
 nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
 " nnoremap <leader>r :CtrlPLastMode C:\\SRC\\Admin<cr>
-nnoremap <leader><tab> :NERDTreeFocus<cr> :redraw!<cr>
+"nnoremap <leader><tab> :NERDTreeFocus<cr> :redraw!<cr>
 map <C-k><C-d> :call NERDComment(0,"toggle")<CR>
 
 " for focusing quickfix window
 nnoremap <leader>q <c-w>b
-
-" only alt maps
-nnoremap <M-j> <C-w>j
-nnoremap <M-k> <C-w>k
-nnoremap <M-h> <C-w>h
-nnoremap <M-l> <C-w>l
 
 nnoremap h g^
 nnoremap l g$
@@ -157,7 +152,7 @@ nnoremap <silent>gw[ :exe "15winc <"<CR>
 nnoremap <silent>gw= :exe "15winc +"<CR>
 nnoremap <silent>gw] :exe "15winc -"<CR>
 nnoremap gif :e $MYVIMRC<cr>
-nnoremap gqr :w<cr> :so %<cr> :nohl<cr> :echo<cr>
+nnoremap gyr :w<cr> :so %<cr> :nohl<cr> :echo<cr>
 nnoremap gr @:
 nnoremap g0 :wqa<cr>
 nnoremap gy *Nciw
@@ -191,6 +186,7 @@ nnoremap gio :call GrepInOtherProject("<C-R><C-W>", "Bethel Field Education Pers
 nnoremap <leader>gs :call ClipboardServer()<cr>
 nnoremap <leader>gc :call ClipboardClient()<cr>
 nnoremap <leader>ga :call ToggleHiddenAll()<CR> :echo<cr>
+nnoremap <leader>gc :call RefreshScreen()<CR> :echo<cr>
 nnoremap <leader>lc :let @+=@:<CR>
 
 nnoremap gnn :call GetFileName()<cr>
@@ -274,6 +270,7 @@ Plugin 'kkoenig/wimproved.vim'
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'tpope/vim-markdown'
 Plugin 'sotte/presenting.vim'
+"Plugin 'Valloric/YouCompleteMe'
 
 map <C-tab> <NOP>
 
@@ -333,7 +330,23 @@ map <leader>y "*y
 let g:NumberToggleTrigger="<C-h>"
 
 
-let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | "c:\program files\git\usr\bin\grep.exe" -v "xaml.cs$"']
+
+"let g:ctrlp_custom_ignore = {
+  "\ 'dir':  '\v[\/]\.(C:\src\Admin\JW.Admin.Client\JW.Admin.Accounting.Client|C:\src\Admin\JW.Admin.Client\JW.Admin.Accounting.Client.Requirements|svn)$',
+  "\ 'file': '\v\.(exe|so|dll)$',
+  "\ 'link': 'some_bad_symbolic_links',
+  "\ }
+  "
+let g:ctrlp_custom_ignore = {
+    \ 'dir': 'JW.Admin.Accounting.Client.Requirements$'
+\ }
+"let g:ctrlp_custom_ignore = {
+  "\ 'dir':  '\v[\/](JW.Admin.Accounting.Client$\|JW.Admin.Accounting.Client.Requirements$\|node_modules)'
+  "\ }
+"let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+"let g:ctrlp_user_command = 'find %s -type f ""'
+" let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:ctrlp_by_filename = 1
 let g:ctrlp_use_caching = 0
 let g:ctrlp_lazy_update = 5
@@ -343,17 +356,18 @@ let g:NERDTreeExactMatchHighlightFullName = 1
 let g:NERDTreePatternMatchHighlightFullName = 1
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let NERDTreeShowHidden=1
-au VimEnter * RainbowParentheses
+" au VimEnter * RainbowParentheses
 au VimEnter * execute "normal \<C-h>"
+au VimEnter * execute "set number relativenumber"
 
 let g:rainbow#max_level = 16
-let g:ctrlp_mruf_max = 2000
+let g:ctrlp_mruf_max = 4000
 
 
 
 
 " more plugin remaps
-nnoremap gnh :silent Glog -- %<CR> :cw<CR> G
+nnoremap gnh :silent Glog -- %<CR> :cw<CR>
 
 nnoremap gnm :call MethodHistory("<C-R><C-W>")
 nnoremap gnl :call LineHistory()
@@ -433,7 +447,11 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         set lines=40 columns=150
         set guicursor+=n-v-c:blinkon0
 
-        colorscheme molokai
+        " colorscheme molokai
+
+        colorscheme delek
+        hi Visual  guifg=black guibg=magenta 
+
         set guioptions-=T  "remove toolbar
         set guioptions-=L  
 	    set guifont=Source_Code_Pro_Semibold:h9:cANSI:qDRAFT
@@ -459,16 +477,19 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " currently using <Solarized Git> in ConEmu, molokai in Vim
         colorscheme molokai
 
-        hi Visual  ctermfg=black ctermbg=magenta 
-        hi Search ctermfg=yellow ctermbg=blue
+        hi Visual  ctermfg=black ctermbg=darkmagenta
+        hi Search ctermfg=yellow ctermbg=lightblue
         hi Comment ctermfg=900 ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
 
-        " weird options for using ConeEmu with xterm set
+        " weird options for using ConEmu with xterm set
         " This will sometimes cause characters to be entered, when scrolling
         " really fast through a document. Must set "ttimeoutlen" to small value
         inoremap <Char-0x07F> <BS>
         nnoremap <Char-0x07F> <BS>
         cnoremap <Char-0x07F> <BS>
+
+
+        :hi TabLineFill ctermfg=LightGreen ctermbg=DarkGreen
 
         let g:ctrlp_prompt_mappings = {
             \ 'PrtInsert("c")':       ['g)'],
@@ -478,16 +499,17 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " Must set "ttimeoutlen" to small value
         set timeoutlen=500 ttimeoutlen=50
 
-        execute "set <M-j>=^[j"
-        nnoremap <M-j> <C-w>j
-
-        set <M-k>=^[k
-        nnoremap <M-k> <C-w>k
-
-        set <M-h>=^[h
+        " set <M-h>=^[h
+        execute "set <M-h>=\eh"
         nnoremap <M-h> <C-w>h
 
-        set <M-l>=^[l
+        execute "set <M-j>=\ej"
+        nnoremap <M-j> <C-w>j
+
+        execute "set <M-k>=\ek"
+        nnoremap <M-k> <C-w>k
+
+        execute "set <M-l>=\el"
         nnoremap <M-l> <C-w>l
 
     else
@@ -508,7 +530,6 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
 
         let &showbreak = ' ◄◄ '
 
-        " gvim in conemu, don't add this last mapping
         let g:ctrlp_prompt_mappings = {
             \ 'PrtInsert("c")':       ['g)']
         \ }
@@ -886,8 +907,8 @@ function! ToggleHiddenAll()
 endfunction
 
 " Triple scrolling "speed"
-nnoremap <C-e> 3<C-e>
-nnoremap <C-y> 3<C-y>
+nnoremap <C-e> 4<C-e>
+nnoremap <C-y> 4<C-y>
 
 
 
@@ -966,5 +987,72 @@ if has("gui_running")
   autocmd VimLeavePre * if g:screen_size_restore_pos == 1 | call ScreenSave() | endif
 endif
 
+  function! RefreshScreen()
+    :execute "normal gg"
+    :execute "normal G"
+    :execute "normal ^b"
+    :execute "normal V"
+    :execute "normal 100j"
+  endfunction
 
+
+
+" notepad colorscheme
 "autocmd BufNewFile,BufRead *.txt   set guifont=Consolas:h15:cANSI:qDRAFT|colorscheme zellner|set lines=20 columns=100
+
+
+
+
+
+" from help
+
+" to use: 
+" :set tabline=%!MyTabLine()
+
+" :set tabline=%!MyTabLine()
+
+function MyTabLine()
+  let s = ''
+  for i in range(tabpagenr('$'))
+    " select the highlighting
+    if i + 1 == tabpagenr()
+      let s .= '%#TabLineSel#'
+    else
+      let s .= '%#TabLine#'
+    endif
+
+    " set the tab page number (for mouse clicks)
+    let s .= '%' . (i + 1) . 'T'
+
+    " the label is made by MyTabLabel()
+    let s .= ' %{MyTabLabel(' . (i + 1) . ')} '
+  endfor
+
+  " after the last tab fill with TabLineFill and reset tab page nr
+  let s .= '%#TabLineFill#%T'
+
+  " right-align the label to close the current tab page
+  if tabpagenr('$') > 1
+    let s .= '%=%#TabLine#%999Xclose'
+  endif
+
+  return s
+endfunction
+
+function MyTabLabel(n)
+  let buflist = tabpagebuflist(a:n)
+  let winnr = tabpagewinnr(a:n)
+  let curFilePath = bufname(buflist[winnr - 1])
+
+  let pathList = ""
+
+  if curFilePath =~ '.*\\.*'
+    let pathList = split(curFilePath, '\')
+  else
+    let pathList = split(curFilePath, '/')
+  endif
+
+  let fileName = pathList[len(pathList)-1]
+
+  return fileName
+endfunction
