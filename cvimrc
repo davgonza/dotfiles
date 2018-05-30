@@ -1,0 +1,16 @@
+set cncpcompletion
+let barposition = "bottom"
+map h previousTab
+map l nextTab
+map b :bookmarks!<space>
+" Link hints
+set linkanimations
+let hintcharacters = "asdfqwerzxcv"
+map T createActiveTabbedHint
+let highlight="#cccccc"
+map <C-g> :tabnew google<space>
+map <C-y> :tabnew youtube<space>
+let completionengines = ['google', 'google-image', 'youtube']
+let mapleader = ","
+map <Leader>m :buffer<space>
+map <Leader>f lastUsedTab

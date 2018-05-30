@@ -164,6 +164,9 @@ nnoremap g9t :tabnew<CR>
 " reset encoding
 nnoremap g9e :set bomb<CR>
 
+" format table
+nnoremap g9f :%!column -t
+
 
 "nnoremap g9g :call NewFileName()<CR>
 "function! NewFileName()
@@ -271,7 +274,7 @@ Plugin 'ryanoasis/vim-devicons'
 Plugin 'tpope/vim-markdown'
 Plugin 'sotte/presenting.vim'
 "Plugin 'Valloric/YouCompleteMe'
-
+Plugin 'JazzCore/ctrlp-cmatcher'
 map <C-tab> <NOP>
 
 
@@ -331,6 +334,8 @@ let g:NumberToggleTrigger="<C-h>"
 
 
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | "c:\program files\git\usr\bin\grep.exe" -v "xaml.cs$"']
+
+let g:ctrlp_user_command = 'fd --type f --color=never "" %s'
 
 "let g:ctrlp_custom_ignore = {
   "\ 'dir':  '\v[\/]\.(C:\src\Admin\JW.Admin.Client\JW.Admin.Accounting.Client|C:\src\Admin\JW.Admin.Client\JW.Admin.Accounting.Client.Requirements|svn)$',
