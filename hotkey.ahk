@@ -12,20 +12,22 @@ IfInString,attribs,A
 Return 
 
 
-
-
-
+setcapslockstate, alwaysoff
+capslock::esc
 
 
 
 
 
 LCtrl::LAlt
-RCtrl::AppsKey
-LWin::LCtrl
-RWin::RCtrl
-LAlt::LShift
-RAlt::RShift
+RCtrl::ralt
+
+LWin::Lshift
+appskey::rshift
+
+LAlt::Lctrl
+RAlt::Rctrl
+
 *RShift::LWin
 
 
