@@ -101,3 +101,12 @@
 	conflictstyle = diff3
 [mergetool]
 	prompt = false
+	keepbackup = false
+[credential]
+	helper = wincred
+[user]
+	name = Dave
+	email = davgonza@bethel.jw.org
+[mergetool "vsdiffmerge"]
+	cmd = vsdiffmerge.exe $REMOTE $LOCAL $BASE $MERGED //m
+	trustexitcode = true

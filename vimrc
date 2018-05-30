@@ -133,6 +133,7 @@ let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 
 
 
+
 "nnoremap g<tab> :wincmd J<cr>
 
 
@@ -273,6 +274,7 @@ Plugin 'kkoenig/wimproved.vim'
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'tpope/vim-markdown'
 Plugin 'sotte/presenting.vim'
+"Plugin 'OmniSharp/omnisharp-vim'
 "Plugin 'Valloric/YouCompleteMe'
 Plugin 'JazzCore/ctrlp-cmatcher'
 map <C-tab> <NOP>
@@ -1004,7 +1006,6 @@ endif
 
 " notepad colorscheme
 "autocmd BufNewFile,BufRead *.txt   set guifont=Consolas:h15:cANSI:qDRAFT|colorscheme zellner|set lines=20 columns=100
-
 
 
 
