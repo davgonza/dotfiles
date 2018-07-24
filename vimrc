@@ -22,7 +22,7 @@ set enc=utf-8
 set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=ucs-bom,utf8,prc
-set statusline=%<%F\ %h%m%r%=%-14.(%l/%L,%c%V%)\ %P 
+set statusline=%<%F\ %h%m%r%=%-14.(%l/%L,%c%V%)\ %P
 let mapleader = ","
 let &showbreak = ' ◄◄ '
 let &showbreak = '>>>>'
@@ -222,7 +222,7 @@ source ~/vimfiles/bundle/colorstepper/colorstepper.vim
 
 
 "————————————————————————————————————————————————————————————————————————————
-" vundle will have different save paths 
+" vundle will have different save paths
 "————————————————————————————————————————————————————————————————————————————
 let s:uname = system("uname -s")
 if has("unix")
@@ -238,10 +238,10 @@ if has("unix")
         call vundle#begin()
     else
         if (s:uname =~ "MINGW.*")
-        
+
             hi Visual  ctermfg=white ctermbg=black gui=none
         endif
-            
+
         " Gotta be mingw
 
         set rtp+=~/vimfiles/bundle/Vundle.vim/
@@ -251,7 +251,7 @@ if has("unix")
 elseif has("win32")
     " beloved windows
     hi Visual  ctermfg=Black ctermbg=white gui=none
-    
+
     set rtp+=~/vimfiles/bundle/Vundle.vim/
     set rtp+=~/fzf
     let path='~/vimfiles/bundle'
@@ -357,31 +357,31 @@ command! -nargs=1 Rename :call OmniSharp#RenameTo("<args>")
 nnoremap <Leader>th :OmniSharpHighlightTypes<CR>
 
 
-"Showmatch significantly slows down omnicomplete                                                                    
-"when the first match contains parentheses.                                                                         
-set noshowmatch                                                                                                     
-                                                                                                                    
-"Super tab settings                                                                                                 
-let g:SuperTabDefaultCompletionType = 'context'                                                                     
-"let g:SuperTabContextDefaultCompletionType = "<c-n>"                                                               
-"let g:SuperTabDefaultCompletionTypeDiscovery = ["&omnifunc:<c-n>","&completefunc:<c-n>"]                           
-let g:SuperTabClosePreviewOnPopupClose = 1                                                                          
-                                                                                                                    
-function! SuperCleverTab()                                                                                          
-    if strpart(getline('.'), 0, col('.') - 1) =~ '^\s*$'                                                            
-        return "\<Tab>"                                                                                             
-    else                                                                                                            
-        if &omnifunc != ''                                                                                          
-            return "\<C-X>\<C-O>"                                                                                   
-        elseif &dictionary != ''                                                                                    
-            return "\<C-K>"                                                                                         
-        else                                                                                                        
-            return "\<C-N>"                                                                                         
-        endif                                                                                                       
-    endif                                                                                                           
-endfunction                                                                                                         
-                                                                                                                    
-inoremap <C-n> <C-R>=SuperCleverTab()<cr>                                                                           
+"Showmatch significantly slows down omnicomplete
+"when the first match contains parentheses.
+set noshowmatch
+
+"Super tab settings
+let g:SuperTabDefaultCompletionType = 'context'
+"let g:SuperTabContextDefaultCompletionType = "<c-n>"
+"let g:SuperTabDefaultCompletionTypeDiscovery = ["&omnifunc:<c-n>","&completefunc:<c-n>"]
+let g:SuperTabClosePreviewOnPopupClose = 1
+
+function! SuperCleverTab()
+    if strpart(getline('.'), 0, col('.') - 1) =~ '^\s*$'
+        return "\<Tab>"
+    else
+        if &omnifunc != ''
+            return "\<C-X>\<C-O>"
+        elseif &dictionary != ''
+            return "\<C-K>"
+        else
+            return "\<C-N>"
+        endif
+    endif
+endfunction
+
+inoremap <C-n> <C-R>=SuperCleverTab()<cr>
 
 
 
@@ -401,8 +401,8 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 let g:syntastic_cs_checkers = ["mcs"]
 
-"Set autocomplete function to OmniSharp (if not using YouCompleteMe completion plugin)     
-set omnifunc=OmniSharp#Complete                                                            
+"Set autocomplete function to OmniSharp (if not using YouCompleteMe completion plugin)
+set omnifunc=OmniSharp#Complete
 
 
 
@@ -525,7 +525,7 @@ endfunction
 
 
 
-let loaded_matchparen = 1 
+let loaded_matchparen = 1
 "map <S-CR> mmggVG<ESC>`m
 "map <S-CR> echo 'What'
 "nnoremap <CR> o<Esc>
@@ -546,7 +546,7 @@ setlocal foldexpr=matchstr(substitute(getline(v:lnum),'\|.*','',''),'^.*/')==#ma
 
 
 
-" unique colors, in powershell with monokai theme 
+" unique colors, in powershell with monokai theme
 " white, yellow, red, cyan, green, darkgray, darkmagenta
 
 
@@ -554,7 +554,7 @@ setlocal foldexpr=matchstr(substitute(getline(v:lnum),'\|.*','',''),'^.*/')==#ma
 "————————————————————————————————————————————————————————————————————————————
 " vsvim (visual studio) and terminal keymaps
 "————————————————————————————————————————————————————————————————————————————
-" if this is a terminal (including mingw ) OR gvim. Basically if 
+" if this is a terminal (including mingw ) OR gvim. Basically if
 " it's not VsVim (Vim for visual studio)
 if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_running')
 
@@ -584,25 +584,25 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
 
         " colorscheme delek
         colorscheme jellybeans
-        hi Visual  guifg=black guibg=magenta 
+        hi Visual  guifg=black guibg=magenta
 
         set guioptions-=T  "remove toolbar
-        set guioptions-=L  
+        set guioptions-=L
 	    set guifont=Source_Code_Pro_Semibold:h9:cANSI:qDRAFT
 
         " text highlighting
         hi Visual  guifg=Black guibg=white
     endif
 
-    " NOTE: specifically for vim in conemu 
+    " NOTE: specifically for vim in conemu
     if !empty($CONEMUBUILD)
         set mouse=a
         set term=xterm
 
         "inoremap <Esc>[62~ <C-X>4<C-E>
         "inoremap <Esc>[63~ <C-X>4<C-Y>
-        nnoremap <Esc>[62~ 4<C-E>      
-        nnoremap <Esc>[63~ 4<C-Y>      
+        nnoremap <Esc>[62~ 4<C-E>
+        nnoremap <Esc>[63~ 4<C-Y>
 
         " perhaps `nocompatible` is not required
         set nocompatible
@@ -635,7 +635,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
             \ 'PrtInsert("c")':       ['g)'],
             \ 'PrtBS()': ['<Char-0x07F>', '<c-h>']
         \ }
-        
+
         " Must set "ttimeoutlen" to small value
         set timeoutlen=500 ttimeoutlen=50
 
@@ -654,7 +654,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
 
     else
         " Else, if it's not ConEmu, I want this mapping to work with others
-        " like Gvim, Powershell, etc. 
+        " like Gvim, Powershell, etc.
         " Basically, still in the Shell, just NOT conemu
         let g:ctrlp_prompt_mappings = {
             \ 'PrtInsert("c")':       ['g)'],
@@ -665,7 +665,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
     if has('gui_running') && has('gui_running')
         :set guioptions-=m
 
-        hi Visual  guifg=black guibg=magenta 
+        hi Visual  guifg=black guibg=magenta
         hi Search guifg=white guibg=#009999
 
         let &showbreak = ' ◄◄ '
@@ -685,31 +685,31 @@ else
     " mapped before, now just remapping for vs
     onoremap l $
     onoremap h ^
-endif     
+endif
 
 
 " For going full screen in gvim (without Conemu :^/)
 ":autocmd GUIEnter * call libcallnr("gvimfullscreen_64.dll", "ToggleFullScreen", 0)
-map <F11> :call libcallnr("gvimfullscreen_64.dll", "ToggleFullScreen", 0)<CR> 
+map <F11> :call libcallnr("gvimfullscreen_64.dll", "ToggleFullScreen", 0)<CR>
 
 
 
 
 
-let s:activatedh = 0 
+let s:activatedh = 0
 
 " toggle chars
 function! ToggleChars()
     if s:activatedh == 0
-        let s:activatedh = 1 
+        let s:activatedh = 1
 
-        set listchars=tab:▸\ ,space:·    
+        set listchars=tab:▸\ ,space:·
         " listchars defined above
         set list
         highlight ExtraWhitespace ctermbg=red guibg=red
         match ExtraWhitespace /\s\+$/
     else
-        let s:activatedh = 0 
+        let s:activatedh = 0
 
         set nolist
         match none
@@ -719,7 +719,7 @@ endfunction
 
 
 
-autocmd Filetype qf setlocal statusline=\ %n\ \ %f%=%L\ lines\ 
+autocmd Filetype qf setlocal statusline=\ %n\ \ %f%=%L\ lines\
 
 
 function! GetFileName()
@@ -787,7 +787,7 @@ function! GrepInSolution(regex, singleFilter)
     let filters = split(a:singleFilter, ',')
     let toCount = len(filters) - 1
 
-    for i in range(0, toCount) 
+    for i in range(0, toCount)
         let includeStr = includeStr . '--include \' . filters[i]
         let includeStr = includeStr . ' '
         let i = i + 1
@@ -822,7 +822,7 @@ function! GrepInOtherProject(regex, projects)
     let grepDirectory = ""
 
     let toCount = len(userProjects) - 1
-    for i in range(0, toCount) 
+    for i in range(0, toCount)
         let grepDirectory = grepDirectory . substitute(standardDirectories, "PlaceHolder", userProjects[i], "g")
         let grepDirectory = grepDirectory . " "
     endfor
@@ -959,7 +959,7 @@ function! SimilarFile()
             let @+ = view
         endif
 
-        exe "normal \,c" 
+        exe "normal \,c"
         exe "normal g)"
     else
         if currentFile =~ ".cs"
@@ -995,7 +995,7 @@ function! UnderCursorInRepo(cursorWord)
     else
         exe "normal \,s"
     endif
-    
+
     exe "normal g)"
     let @+ = currentClipboard
 endfunction
@@ -1149,7 +1149,7 @@ endif
 
 " from help
 
-" to use: 
+" to use:
 " :set tabline=%!MyTabLine()
 
 " :set tabline=%!MyTabLine()
