@@ -32,6 +32,7 @@ set directory=~/tmp//
 set wrap
 set cpo=n
 set scrolloff=3
+set autoread
 
 syntax on                       " turn syntax highlighting on by default
 filetype off
@@ -50,13 +51,13 @@ nnoremap <leader>e :nohl<cr> :echo<cr>
 nnoremap <leader>f :b#<cr>
 nnoremap <leader>m :CtrlPMRUFiles<cr>
 nnoremap <leader>v :CtrlPBuffer<cr>
-nnoremap <leader>x :NERDTreeFind<cr> :redraw!<cr>
+nnoremap <leader>z :NERDTreeFind<cr> :redraw!<cr>
 nnoremap <leader>s :CtrlP C:\\SRC\\Admin\\JW.Admin.Server<cr>
 nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
 " nnoremap <leader>r :CtrlPLastMode C:\\SRC\\Admin<cr>
 "nnoremap <leader><tab> :NERDTreeFocus<cr> :redraw!<cr>
-map <C-k><C-d> :call NERDComment(0,"toggle")<CR>
+map <C-k><C-d> <plug>NERDCommenterToggle
 
 " for focusing quickfix window
 nnoremap <leader>q <c-w>b
@@ -210,6 +211,7 @@ nnoremap cgp c/)<CR> <ESC>:nohl<cr>xi
 nnoremap cgb c/}<CR> <ESC>:nohl<cr>xi
 nnoremap cgq c/"<CR> <ESC>:nohl<cr>xi
 nnoremap cg; c/;<CR> <ESC>:nohl<cr>xi
+nnoremap gfl :%s/\\r\\n//g
 
 source ~/vimfiles/bundle/colorstepper/colorstepper.vim
 
@@ -235,6 +237,11 @@ if has("unix")
         set rtp+=~/.vim/bundle/Vundle.vim/
         call vundle#begin()
     else
+        if (s:uname =~ "MINGW.*")
+        
+            hi Visual  ctermfg=white ctermbg=black gui=none
+        endif
+            
         " Gotta be mingw
 
         set rtp+=~/vimfiles/bundle/Vundle.vim/
@@ -246,6 +253,7 @@ elseif has("win32")
     hi Visual  ctermfg=Black ctermbg=white gui=none
     
     set rtp+=~/vimfiles/bundle/Vundle.vim/
+    set rtp+=~/fzf
     let path='~/vimfiles/bundle'
     call vundle#begin(path)
 endif
@@ -262,7 +270,6 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'farmergreg/vim-lastplace'
 
 
-" Plugin 'OmniSharp/omnisharp-vim'
 Plugin 'tpope/vim-dispatch'
 Plugin 'vim-syntastic/syntastic'
 Plugin 'ervandew/supertab'
@@ -274,10 +281,8 @@ Plugin 'kkoenig/wimproved.vim'
 Plugin 'ryanoasis/vim-devicons'
 Plugin 'tpope/vim-markdown'
 Plugin 'sotte/presenting.vim'
-"Plugin 'OmniSharp/omnisharp-vim'
-"Plugin 'Valloric/YouCompleteMe'
 Plugin 'JazzCore/ctrlp-cmatcher'
-map <C-tab> <NOP>
+Plugin 'OmniSharp/omnisharp-vim'
 
 
 
@@ -291,6 +296,127 @@ map <C-tab> <NOP>
 
 call vundle#end()                    " required
 filetype plugin indent on            " required
+
+
+
+
+let g:OmniSharp_server_path = 'C:\src\omnisharp\OmniSharp.exe'
+
+
+augroup omnisharp_commands
+    autocmd!
+
+    " Synchronous build (blocks Vim)
+    "autocmd FileType cs nnoremap <buffer> <F5> :wa!<CR>:OmniSharpBuild<CR>
+    " Builds can also run asynchronously with vim-dispatch installed
+    " autocmd FileType cs nnoremap <buffer> <Leader>b :wa!<CR>:OmniSharpBuildAsync<CR>
+
+    " Show type information automatically when the cursor stops moving
+    " autocmd CursorHold *.cs call OmniSharp#TypeLookupWithoutDocumentation()
+
+    autocmd BufWritePost *.cs SyntasticCheck
+
+    " Automatically add new cs files to the nearest project on save
+    autocmd BufWritePost *.cs call OmniSharp#AddToProject()
+
+    " The following commands are contextual, based on the cursor position.
+    autocmd FileType cs nnoremap <buffer> gd :OmniSharpGotoDefinition<CR>
+    autocmd FileType cs nnoremap <buffer> <Leader>fi :OmniSharpFindImplementations<CR>
+    autocmd FileType cs nnoremap <buffer> <Leader>fs :OmniSharpFindSymbol<CR>
+    autocmd FileType cs nnoremap <buffer> <Leader>fu :OmniSharpFindUsages<CR>
+
+    " Finds members in the current buffer
+    autocmd FileType cs nnoremap <buffer> <Leader>fm :OmniSharpFindMembers<CR>
+
+    " Cursor can be anywhere on the line containing an issue
+    autocmd FileType cs nnoremap <buffer> <Leader>x  :OmniSharpFixIssue<CR>
+    autocmd FileType cs nnoremap <buffer> <Leader>fx :OmniSharpFixUsings<CR>
+    autocmd FileType cs nnoremap <buffer> <Leader>tt :OmniSharpTypeLookup<CR>
+    autocmd FileType cs nnoremap <buffer> <Leader>ty :OmniSharpDocumentation<CR>
+    autocmd FileType cs nnoremap <buffer> <C-\> :OmniSharpSignatureHelp<CR>
+    autocmd FileType cs inoremap <buffer> <C-\> <C-o>:OmniSharpSignatureHelp<CR>
+
+
+    " Navigate up and down by method/property/field
+    autocmd FileType cs nnoremap <buffer> <C-k> :OmniSharpNavigateUp<CR>
+    autocmd FileType cs nnoremap <buffer> <C-j> :OmniSharpNavigateDown<CR>
+augroup END
+
+" Contextual code actions (uses fzf, CtrlP or unite.vim when available)
+nnoremap <Leader><Space> :OmniSharpGetCodeActions<CR>
+" Run code actions with text selected in visual mode to extract method
+xnoremap <Leader><Space> :call OmniSharp#GetCodeActions('visual')<CR>
+
+" Rename with dialog
+nnoremap <Leader>nm :OmniSharpRename<CR>
+nnoremap <F2> :OmniSharpRename<CR>
+" Rename without dialog - with cursor on the symbol to rename: `:Rename newname`
+command! -nargs=1 Rename :call OmniSharp#RenameTo("<args>")
+
+" Add syntax highlighting for types and interfaces
+nnoremap <Leader>th :OmniSharpHighlightTypes<CR>
+
+
+"Showmatch significantly slows down omnicomplete                                                                    
+"when the first match contains parentheses.                                                                         
+set noshowmatch                                                                                                     
+                                                                                                                    
+"Super tab settings                                                                                                 
+let g:SuperTabDefaultCompletionType = 'context'                                                                     
+"let g:SuperTabContextDefaultCompletionType = "<c-n>"                                                               
+"let g:SuperTabDefaultCompletionTypeDiscovery = ["&omnifunc:<c-n>","&completefunc:<c-n>"]                           
+let g:SuperTabClosePreviewOnPopupClose = 1                                                                          
+                                                                                                                    
+function! SuperCleverTab()                                                                                          
+    if strpart(getline('.'), 0, col('.') - 1) =~ '^\s*$'                                                            
+        return "\<Tab>"                                                                                             
+    else                                                                                                            
+        if &omnifunc != ''                                                                                          
+            return "\<C-X>\<C-O>"                                                                                   
+        elseif &dictionary != ''                                                                                    
+            return "\<C-K>"                                                                                         
+        else                                                                                                        
+            return "\<C-N>"                                                                                         
+        endif                                                                                                       
+    endif                                                                                                           
+endfunction                                                                                                         
+                                                                                                                    
+inoremap <C-n> <C-R>=SuperCleverTab()<cr>                                                                           
+
+
+
+set completeopt-=preview
+
+
+
+
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_cs_checkers = ["mcs"]
+
+"Set autocomplete function to OmniSharp (if not using YouCompleteMe completion plugin)     
+set omnifunc=OmniSharp#Complete                                                            
+
+
+
+
+
+
+" If you prefer the Omni-Completion tip window to close when a selection is
+" made, these lines close it on movement in insert mode or when leaving
+" insert mode
+autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
+autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+
+
+
 
 
 
@@ -337,7 +463,7 @@ let g:NumberToggleTrigger="<C-h>"
 
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | "c:\program files\git\usr\bin\grep.exe" -v "xaml.cs$"']
 
-let g:ctrlp_user_command = 'fd --type f --color=never "" %s'
+" let g:ctrlp_user_command = 'fd --type f --color=never "" %s'
 
 "let g:ctrlp_custom_ignore = {
   "\ 'dir':  '\v[\/]\.(C:\src\Admin\JW.Admin.Client\JW.Admin.Accounting.Client|C:\src\Admin\JW.Admin.Client\JW.Admin.Accounting.Client.Requirements|svn)$',
@@ -456,7 +582,8 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
 
         " colorscheme molokai
 
-        colorscheme delek
+        " colorscheme delek
+        colorscheme jellybeans
         hi Visual  guifg=black guibg=magenta 
 
         set guioptions-=T  "remove toolbar
@@ -471,6 +598,12 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
     if !empty($CONEMUBUILD)
         set mouse=a
         set term=xterm
+
+        "inoremap <Esc>[62~ <C-X>4<C-E>
+        "inoremap <Esc>[63~ <C-X>4<C-Y>
+        nnoremap <Esc>[62~ 4<C-E>      
+        nnoremap <Esc>[63~ 4<C-Y>      
+
         " perhaps `nocompatible` is not required
         set nocompatible
         set t_Co=256
@@ -889,6 +1022,10 @@ function! IsClient()
 
     return isclient
 endfunction
+
+
+
+
 
 
 

@@ -10,6 +10,7 @@ alias l.='ls -Gp -d .*'
 
 ## Git stuff
 alias gst='git status'
+alias test='echo "what"'
 alias gpo='git push origin master'
 
 ## Colorize the grep command output for ease of use (good for log files)##

@@ -82,7 +82,7 @@
     preloadindex = on
     longpaths = true
     editor = "C:/src/vim/vim74/vim.exe"
-	excludesfile = ~/.gitignore
+	excludesfile = %USERPROFILE%\\.gitignore
 [gc]
     auto = 256
 [push]
@@ -105,8 +105,10 @@
 [credential]
 	helper = wincred
 [user]
-	name = Dave
+	name = dave gonzalez
 	email = davgonza@bethel.jw.org
 [mergetool "vsdiffmerge"]
 	cmd = vsdiffmerge.exe $REMOTE $LOCAL $BASE $MERGED //m
 	trustexitcode = true
+[gui]
+	recentrepo = C:/src/Admin
