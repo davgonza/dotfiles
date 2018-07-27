@@ -317,7 +317,7 @@ augroup omnisharp_commands
     autocmd BufWritePost *.cs SyntasticCheck
 
     " Automatically add new cs files to the nearest project on save
-    autocmd BufWritePost *.cs call OmniSharp#AddToProject()
+    " autocmd BufWritePost *.cs call OmniSharp#AddToProject()
 
     " The following commands are contextual, based on the cursor position.
     autocmd FileType cs nnoremap <buffer> gd :OmniSharpGotoDefinition<CR>
@@ -403,6 +403,19 @@ let g:syntastic_cs_checkers = ["mcs"]
 
 "Set autocomplete function to OmniSharp (if not using YouCompleteMe completion plugin)
 set omnifunc=OmniSharp#Complete
+
+vnoremap <silent> <C-F5> :<C-U>let old_reg=@"<CR>gvy:silent!!cmd /cstart <C-R><C-R>"<CR><CR>:let @"=old_reg<CR>
+function! HandleURL()
+  let s:uri = matchstr(getline("."), '[a-z]*:\/\/[^ >,;]*')
+  echo s:uri
+  if s:uri != ""
+    silent exec "!start ".s:uri
+  else
+    echo "No URI found in line."
+  endif
+endfunction
+map gx :call HandleURL()<cr>
+
 
 
 
@@ -500,12 +513,42 @@ let g:ctrlp_mruf_max = 4000
 
 
 " more plugin remaps
-nnoremap gnh :silent Glog -- %<CR> :cw<CR>
+" nnoremap gnh :silent Glog -- %<CR> :cw<CR>
+nnoremap gnh :call FileHistory()<CR>
+nnoremap gi :call DiffFileHistory()<CR>
+
+function! DiffFileHistory()
+    exec "/\\c" . ".*JW.Admin.*" . @m
+    exec "normal O"
+    exec "normal zR"
+
+    exec "normal gg]czz"
+
+    :windo set wrap
+endfunction
+
+
+function! FileHistory()
+    let f_path = split(expand('%:p'), '\')
+    let aIndex = len(f_path)-1
+    let fileName = f_path[aIndex]
+
+    let @m = fileName
+
+    let filePath = expand("%:p")
+
+    :execute "silent Glog -30 -- " . filePath
+    :execute "cw"
+    :execute "normal ,b"
+endfunction
+
+
+
+
+
 
 nnoremap gnm :call MethodHistory("<C-R><C-W>")
 nnoremap gnl :call LineHistory()
-
-
 
 function! MethodHistory(regex)
     let f_path = split(expand('%:p'), '\')
@@ -522,6 +565,20 @@ function! LineHistory()
 
     :execute "silent Git! log -L " . line(".") . "," . line(".") . ":" . fileNamePathInRepo
 endfunction
+
+
+
+
+
+
+" last active tab
+if !exists('g:lasttab')
+  let g:lasttab = 1
+endif
+nmap <Leader>3 :exe "tabn ".g:lasttab<CR>
+au TabLeave * let g:lasttab = tabpagenr()
+
+
 
 
 
@@ -615,7 +672,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " this part is pretty nice, because ConEmu can have its own colorscheme,
         " but as soon as Vim gets activated, this colorscheme will take over
         " currently using <Solarized Git> in ConEmu, molokai in Vim
-        colorscheme molokai
+        " colorscheme molokai
 
         hi Visual  ctermfg=black ctermbg=darkmagenta
         hi Search ctermfg=yellow ctermbg=lightblue
