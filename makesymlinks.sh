@@ -37,7 +37,6 @@ for file in $files; do
     echo "Moving any existing dotfiles from ~ to $olddir"
     mv ~/.$file ~/dotfiles_old/
     echo "Creating symlink to $file in home directory."
-<<<<<<< HEAD
     
     windows() { [[ -n "$WINDIR" ]]; }
 
@@ -48,11 +47,7 @@ for file in $files; do
 		# else create "symlink"
 		ln -s $dir/$file ~/.$file
 	fi
-||||||| merged common ancestors
     ln -s $dir/$file ~/.$file
-=======
-	ln -s $dir/$file ~/.$file
->>>>>>> 66a7c44da0eb3bd69fe79f3aa677a75f9e33e0e5
 done
 read -p "Press any key to continue... " -n1 -s
 

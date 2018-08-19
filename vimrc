@@ -1,6 +1,7 @@
-    " to normalize line endings in vim, try the following:
+" to normalize line endings in vim, try the following:
 " %s/^M$//g
 " on a mac, that's Ctrl+V,M for ^M symbol
+" another easy way :w! ++ff=unix
 set nocompatible                " vi compatible is LAME
 set ai                          " set auto-indenting on for programming
 set vb                          " turn on the "visual bell" - which is much quieter than the "audio blink"
@@ -212,7 +213,6 @@ nnoremap cgb c/}<CR> <ESC>:nohl<cr>xi
 nnoremap cgq c/"<CR> <ESC>:nohl<cr>xi
 nnoremap cg; c/;<CR> <ESC>:nohl<cr>xi
 nnoremap gfl :%s/\\r\\n/
-/g
 
 
 
