@@ -47,7 +47,6 @@ for file in $files; do
 		# else create "symlink"
 		ln -s $dir/$file ~/.$file
 	fi
-    ln -s $dir/$file ~/.$file
 done
 read -p "Press any key to continue... " -n1 -s
 
