@@ -211,9 +211,9 @@ nnoremap cgp c/)<CR> <ESC>:nohl<cr>xi
 nnoremap cgb c/}<CR> <ESC>:nohl<cr>xi
 nnoremap cgq c/"<CR> <ESC>:nohl<cr>xi
 nnoremap cg; c/;<CR> <ESC>:nohl<cr>xi
-nnoremap gfl :%s/\\r\\n//g
+nnoremap gfl :%s/\\r\\n/
+/g
 
-source ~/vimfiles/bundle/colorstepper/colorstepper.vim
 
 
 " )
@@ -228,6 +228,8 @@ let s:uname = system("uname -s")
 if has("unix")
     if s:uname == "Darwin\n"
         " Do Mac stuff here
+	
+	hi Visual  ctermfg=white ctermbg=magenta gui=none
 
         set rtp+=~/.vim/bundle/Vundle.vim/
         call vundle#begin()
@@ -251,6 +253,8 @@ if has("unix")
 elseif has("win32")
     " beloved windows
     hi Visual  ctermfg=Black ctermbg=white gui=none
+    
+    source ~/vimfiles/bundle/colorstepper/colorstepper.vim
 
     set rtp+=~/vimfiles/bundle/Vundle.vim/
     set rtp+=~/fzf
@@ -390,16 +394,17 @@ set completeopt-=preview
 
 
 
+if has('syntastic')
+	set statusline+=%#warningmsg#
+	set statusline+=%{SyntasticStatuslineFlag()}
+	set statusline+=%*
 
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_cs_checkers = ["mcs"]
+	let g:syntastic_always_populate_loc_list = 1
+	let g:syntastic_auto_loc_list = 1
+	let g:syntastic_check_on_open = 1
+	let g:syntastic_check_on_wq = 0
+	let g:syntastic_cs_checkers = ["mcs"]
+endif
 
 "Set autocomplete function to OmniSharp (if not using YouCompleteMe completion plugin)
 set omnifunc=OmniSharp#Complete
