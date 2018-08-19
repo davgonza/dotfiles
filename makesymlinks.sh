@@ -2,19 +2,23 @@
 ############################
 # .make.sh
 # This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
+# 1. first rename dotfile (remove dot), and place inside "dotfiles" folder (the one you cloned)
+# 2. run this script
+# 3. symlinks created for all specified dotfiles
+# 4. IMPORTANT: this script doesn't do it, so you have to manually clean out "dotfiles_old" folder after every rerun
 ############################
 # 1. first rename dotfile to remove dot, and place inside dotfiles directory (the one you cloned)
 # 2. run this script
 # 3. there should be a symlink (copy) of the desired dotfile in your $HOME directory
 ############################
 
-########## Variables
+#################### Variables
 
 dir=~/dotfiles                    					  # dotfiles directory
 olddir=~/dotfiles_old             					  # old dotfiles backup directory
 files="bash_aliases bashrc gitignore bash_profile gitconfig vimrc"    	  # list of files/folders to symlink in homedir
 
-##########
+####################
 
 # create dotfiles_old in homedir
 echo "Creating $olddir for backup of any existing dotfiles in ~"
@@ -33,6 +37,7 @@ for file in $files; do
     echo "Moving any existing dotfiles from ~ to $olddir"
     mv ~/.$file ~/dotfiles_old/
     echo "Creating symlink to $file in home directory."
+<<<<<<< HEAD
     
     windows() { [[ -n "$WINDIR" ]]; }
 
@@ -43,4 +48,11 @@ for file in $files; do
 		# else create "symlink"
 		ln -s $dir/$file ~/.$file
 	fi
+||||||| merged common ancestors
+    ln -s $dir/$file ~/.$file
+=======
+	ln -s $dir/$file ~/.$file
+>>>>>>> 66a7c44da0eb3bd69fe79f3aa677a75f9e33e0e5
 done
+read -p "Press any key to continue... " -n1 -s
+
