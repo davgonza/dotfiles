@@ -80,7 +80,7 @@
     fscache = on
     preloadindex = on
     longpaths = true
-    editor = "C:/src/vim/vim74/vim.exe"
+    editor = "vim"
 	excludesfile = ~/.gitignore
 [gc]
     auto = 256

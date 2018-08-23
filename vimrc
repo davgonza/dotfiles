@@ -3,6 +3,7 @@
 " on a mac, that's Ctrl+V,M for ^M symbol
 " another easy way :w! ++ff=unix
 set nocompatible                " vi compatible is LAME
+
 set ai                          " set auto-indenting on for programming
 set vb                          " turn on the "visual bell" - which is much quieter than the "audio blink"
 set ruler                       " show the cursor position all the time
@@ -224,32 +225,17 @@ nnoremap gfl :%s/\\r\\n/
 "————————————————————————————————————————————————————————————————————————————
 " vundle will have different save paths
 "————————————————————————————————————————————————————————————————————————————
-let s:uname = system("uname -s")
 if has("unix")
-    if s:uname == "Darwin\n"
-        " Do Mac stuff here
-	
 	hi Visual  ctermfg=white ctermbg=magenta gui=none
 
-        set rtp+=~/.vim/bundle/Vundle.vim/
-        call vundle#begin()
-    elseif s:uname == "Linux\n"
-        " Do Linux stuff here
+    set rtp+=~/.vim/bundle/Vundle.vim/
+    call vundle#begin()
 
-        set rtp+=~/.vim/bundle/Vundle.vim/
-        call vundle#begin()
-    else
-        if (s:uname =~ "MINGW.*")
+    "mingw
+        "set rtp+=~/vimfiles/bundle/Vundle.vim/
+        "let path='~/vimfiles/bundle'
+        "call vundle#begin(path)
 
-            hi Visual  ctermfg=white ctermbg=black gui=none
-        endif
-
-        " Gotta be mingw
-
-        set rtp+=~/vimfiles/bundle/Vundle.vim/
-        let path='~/vimfiles/bundle'
-        call vundle#begin(path)
-    endif
 elseif has("win32")
     " beloved windows
     hi Visual  ctermfg=Black ctermbg=white gui=none
@@ -286,7 +272,11 @@ Plugin 'ryanoasis/vim-devicons'
 Plugin 'tpope/vim-markdown'
 Plugin 'sotte/presenting.vim'
 Plugin 'JazzCore/ctrlp-cmatcher'
-Plugin 'OmniSharp/omnisharp-vim'
+
+" only load omnisharp, when not inside conemu
+if empty($CONEMUBUILD)
+    Plugin 'OmniSharp/omnisharp-vim'
+endif
 
 
 
@@ -678,11 +668,12 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " this part is pretty nice, because ConEmu can have its own colorscheme,
         " but as soon as Vim gets activated, this colorscheme will take over
         " currently using <Solarized Git> in ConEmu, molokai in Vim
-        " colorscheme molokai
+        colorscheme jellybeans
 
         hi Visual  ctermfg=black ctermbg=darkmagenta
-        hi Search ctermfg=yellow ctermbg=lightblue
-        hi Comment ctermfg=900 ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
+        hi Search ctermfg=black ctermbg=green
+        " hi Comment ctermfg=900 ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
+        hi Comment ctermfg=496
 
         " weird options for using ConEmu with xterm set
         " This will sometimes cause characters to be entered, when scrolling
