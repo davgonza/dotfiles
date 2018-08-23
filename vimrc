@@ -651,6 +651,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         set guioptions-=T  "remove toolbar
         set guioptions-=L
 	    set guifont=Source_Code_Pro_Semibold:h9:cANSI:qDRAFT
+        set guifont=DroidSansMono_Nerd_Font_Mono:h9:cANSI:qDRAFT
 
         " text highlighting
         hi Visual  guifg=Black guibg=white
