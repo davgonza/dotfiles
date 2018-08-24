@@ -398,6 +398,7 @@ endif
 
 "Set autocomplete function to OmniSharp (if not using YouCompleteMe completion plugin)
 set omnifunc=OmniSharp#Complete
+let g:OmniSharp_timeout = 10
 
 vnoremap <silent> <C-F5> :<C-U>let old_reg=@"<CR>gvy:silent!!cmd /cstart <C-R><C-R>"<CR><CR>:let @"=old_reg<CR>
 function! HandleURL()
