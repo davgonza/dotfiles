@@ -35,6 +35,8 @@ set wrap
 set cpo=n
 set scrolloff=3
 set autoread
+autocmd SwapExists * let v:swapchoice = "o"                                            
+let &statusline .= '%{(&readonly || !&modifiable) ? " <EE><82><A2>" : ""} <EE><82><B1>'
 
 syntax on                       " turn syntax highlighting on by default
 filetype off
@@ -653,10 +655,20 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         set mouse=a
         set term=xterm
 
+        " NOTE: not even actually sure if this even works anymore, as we are
+        " handling it through ConEmu now.
+        "
         "inoremap <Esc>[62~ <C-X>4<C-E>
         "inoremap <Esc>[63~ <C-X>4<C-Y>
-        nnoremap <Esc>[62~ 4<C-E>
-        nnoremap <Esc>[63~ 4<C-Y>
+        "nnoremap <Esc>[62~ 4<C-E>
+        "nnoremap <Esc>[63~ 4<C-Y>
+
+        " weird options for using ConEmu with xterm set
+        " This will sometimes cause characters to be entered, when scrolling
+        " really fast through a document. Must set "ttimeoutlen" to small value
+        inoremap <Char-0x07F> <BS>
+        nnoremap <Char-0x07F> <BS>
+        cnoremap <Char-0x07F> <BS>
 
         " perhaps `nocompatible` is not required
         set nocompatible
@@ -676,12 +688,6 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " hi Comment ctermfg=900 ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
         hi Comment ctermfg=496
 
-        " weird options for using ConEmu with xterm set
-        " This will sometimes cause characters to be entered, when scrolling
-        " really fast through a document. Must set "ttimeoutlen" to small value
-        inoremap <Char-0x07F> <BS>
-        nnoremap <Char-0x07F> <BS>
-        cnoremap <Char-0x07F> <BS>
 
 
         :hi TabLineFill ctermfg=LightGreen ctermbg=DarkGreen
