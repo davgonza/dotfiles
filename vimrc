@@ -186,7 +186,7 @@ nnoremap g<SPACE>b :Gblame<CR> <C-w>o
 
 nnoremap gp :call GrepInProject("")<left><left>
 
-nnoremap <expr> gs IsClient() == 1 ? ":call GrepInSolution('', '*.cs,*.xaml')<left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left>" : ":call GrepInSolution('', '*.xml,*.cs')<left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left>"
+nnoremap <expr> gs IsClient() == 1 ? ":call GrepInSolution('', '*.cs,*.xaml')<left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left>" : ":call GrepInSolution('', '*.hcg,*.cs')<left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left>"
 
 nnoremap gio :call GrepInOtherProject("<C-R><C-W>", "Bethel Field Education Persons")<left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left>
 
@@ -802,7 +802,7 @@ function! GrepInProject(regex)
     if IsClient() == 1
         :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     else
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.hcg --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     endif
 
     :execute "cw"
@@ -819,7 +819,7 @@ function! GrepInFolder(regex, fileType)
     if IsClient() == 1
         :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . currentFolder . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     else
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.hcg --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     endif
 
     :execute "cw"
@@ -868,7 +868,7 @@ endfunction
 
 
 function! GrepInOtherProject(regex, projects)
-" :grep -rn "ExpressionHelpers" C:/src/Admin/JW.Admin.Server/JW.Admin.Field.ServiceInterface C:/src/Admin/JW.Admin.Server/JW.Admin.Bethel.ServiceInterface --include \*.cs --include \*.xml --exclude-dir=obj --exclude-dir=bin
+" :grep -rn "ExpressionHelpers" C:/src/Admin/JW.Admin.Server/JW.Admin.Field.ServiceInterface C:/src/Admin/JW.Admin.Server/JW.Admin.Bethel.ServiceInterface --include \*.cs --include \*.hcg --exclude-dir=obj --exclude-dir=bin
 
     let userProjects = split(a:projects, " ")
 
@@ -888,7 +888,7 @@ function! GrepInOtherProject(regex, projects)
         echo "only works with server"
        " :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . grepDirectory . " --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin"
     else
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . grepDirectory . " --include \\*.cs --include \\*.xml --exclude-dir=obj --exclude-dir=bin"
+        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . grepDirectory . " --include \\*.cs --include \\*.hcg --exclude-dir=obj --exclude-dir=bin"
     endif
 
     :execute "cw"
@@ -1018,7 +1018,7 @@ function! SimilarFile()
     else
         if currentFile =~ ".cs"
             let currentFile = strpart(currentFile, 0, len(currentFile)-3)
-        elseif currentFile =~ ".xml"
+        elseif currentFile =~ ".hcg"
             let currentFile = strpart(currentFile, 0, len(currentFile)-4)
         end
 
