@@ -47,6 +47,8 @@ nnoremap <space> :
 
 " clipboard
 " let @+ =
+"
+
 
 " uses git for indexing, and provides a faster prompt overall
 nnoremap <leader>a gg"*yG<c-o><c-o>zz
@@ -108,10 +110,6 @@ nnoremap - W
 map <C-j> :cn<CR>zz
 map <C-k> :cp<CR>
 
-" The Silver Searcher
-if executable('ag')
-  " set grepprg=ag\ --nogroup\ --nocolor
-endif
 
 let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 
@@ -241,8 +239,26 @@ if has("unix")
 elseif has("win32")
     " beloved windows
     hi Visual  ctermfg=Black ctermbg=white gui=none
+
+    let g:agprg="C:/ProgramData/chocolatey/bin/ag.exe --column"
+
+    " The Silver Searcher
+    if executable('ag')
+      set grepprg=ag\ --nogroup\ --nocolor
+    endif
+    
+
+
+
+
+
+
+
     
     source ~/vimfiles/bundle/colorstepper/colorstepper.vim
+
+
+
 
     set rtp+=~/vimfiles/bundle/Vundle.vim/
     set rtp+=~/fzf
@@ -274,6 +290,7 @@ Plugin 'ryanoasis/vim-devicons'
 Plugin 'tpope/vim-markdown'
 Plugin 'sotte/presenting.vim'
 Plugin 'JazzCore/ctrlp-cmatcher'
+Plugin 'epmatsw/ag.vim'
 
 " only load omnisharp, when not inside conemu
 if empty($CONEMUBUILD)
@@ -456,6 +473,9 @@ map <leader>y "*y
 " looks weird, but it only remaps in normal mode
 let g:NumberToggleTrigger="<C-h>"
 
+
+let g:ctrlp_clear_cache_on_exit = 0
+let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
 
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | "c:\program files\git\usr\bin\grep.exe" -v "xaml.cs$"']
 
