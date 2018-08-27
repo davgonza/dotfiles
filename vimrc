@@ -363,21 +363,6 @@ let g:SuperTabDefaultCompletionType = 'context'
 "let g:SuperTabDefaultCompletionTypeDiscovery = ["&omnifunc:<c-n>","&completefunc:<c-n>"]
 let g:SuperTabClosePreviewOnPopupClose = 1
 
-function! SuperCleverTab()
-    if strpart(getline('.'), 0, col('.') - 1) =~ '^\s*$'
-        return "\<Tab>"
-    else
-        if &omnifunc != ''
-            return "\<C-X>\<C-O>"
-        elseif &dictionary != ''
-            return "\<C-K>"
-        else
-            return "\<C-N>"
-        endif
-    endif
-endfunction
-
-inoremap <C-n> <C-R>=SuperCleverTab()<cr>
 
 
 
@@ -623,6 +608,24 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
     nnoremap <expr> j v:count ? 'j' : 'gj'
     nnoremap <expr> k v:count ? 'k' : 'gk'
     nnoremap / /\\c
+
+
+    function! SuperCleverTab()
+        if strpart(getline('.'), 0, col('.') - 1) =~ '^\s*$'
+            return "\<Tab>"
+        else
+            if &omnifunc != ''
+                return "\<C-X>\<C-O>"
+            elseif &dictionary != ''
+                return "\<C-K>"
+            else
+                return "\<C-N>"
+            endif
+        endif
+    endfunction
+
+    inoremap <C-n> <C-R>=SuperCleverTab()<cr>
+
 
     " hack; highlighting doesn't work when doing normal n unless nohlsearch is
     " used before the method call
