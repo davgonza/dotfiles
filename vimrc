@@ -61,6 +61,7 @@ nnoremap <leader>z :NERDTreeFind<cr> :redraw!<cr>
 nnoremap <leader>s :CtrlP C:\\SRC\\Admin\\JW.Admin.Server<cr>
 nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
+nnoremap <leader>gg :CtrlP C:\\SRC\\symlinks<cr>
 " nnoremap <leader>r :CtrlPLastMode C:\\SRC\\Admin<cr>
 "nnoremap <leader><tab> :NERDTreeFocus<cr> :redraw!<cr>
 map <C-k><C-d> <plug>NERDCommenterToggle
@@ -476,6 +477,7 @@ let g:NumberToggleTrigger="<C-h>"
 
 let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
+let g:ctrlp_follow_symlinks=1
 
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | "c:\program files\git\usr\bin\grep.exe" -v "xaml.cs$"']
 
