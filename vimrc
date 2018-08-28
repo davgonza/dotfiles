@@ -50,7 +50,6 @@ nnoremap <space> :
 "
 
 
-" uses git for indexing, and provides a faster prompt overall
 nnoremap <leader>a gg"*yG<c-o><c-o>zz
 nnoremap <leader>b <c-w>p
 nnoremap <leader>e :nohl<cr> :echo<cr>
@@ -62,8 +61,6 @@ nnoremap <leader>s :CtrlP C:\\SRC\\Admin\\JW.Admin.Server<cr>
 nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
 nnoremap <leader>gg :CtrlP C:\\SRC\\symlinks<cr>
-" nnoremap <leader>r :CtrlPLastMode C:\\SRC\\Admin<cr>
-"nnoremap <leader><tab> :NERDTreeFocus<cr> :redraw!<cr>
 map <C-k><C-d> <plug>NERDCommenterToggle
 
 " for focusing quickfix window
@@ -116,29 +113,11 @@ let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 
 
 
-"if &diff
-    "" less confusing diffs...
-
-    "colorscheme bw
-    "syntax off
-    "hi DiffAdd      cterm=none    ctermfg=White         ctermbg=Green
-    "hi DiffChange   cterm=none    ctermfg=White         ctermbg=none
-    "hi DiffDelete   cterm=bold    ctermfg=White         ctermbg=red
-    "hi DiffText     cterm=none    ctermfg=White         ctermbg=darkmagenta
-
-    "hi DiffAdd      gui=none      guifg=NONE            guibg=#bada9f
-    "hi DiffChange   gui=none      guifg=NONE            guibg=#e5d5ac
-    "hi DiffDelete   gui=bold      guifg=#ff8080         guibg=#ffb0b0
-    "hi DiffText     gui=none      guifg=NONE            guibg=#8cbee2
-
-"endif
 
 
 
 
 
-
-"nnoremap g<tab> :wincmd J<cr>
 
 
 "————————————————————————————————————————————————————————————————————————————
@@ -194,7 +173,6 @@ nnoremap gio :call GrepInOtherProject("<C-R><C-W>", "Bethel Field Education Pers
 nnoremap <leader>gs :call ClipboardServer()<cr>
 nnoremap <leader>gc :call ClipboardClient()<cr>
 nnoremap <leader>ga :call ToggleHiddenAll()<CR> :echo<cr>
-nnoremap <leader>gc :call RefreshScreen()<CR> :echo<cr>
 nnoremap <leader>lc :let @+=@:<CR>
 
 nnoremap gnn :call GetFileName()<cr>
@@ -588,18 +566,6 @@ au TabLeave * let g:lasttab = tabpagenr()
 
 
 let loaded_matchparen = 1
-"map <S-CR> mmggVG<ESC>`m
-"map <S-CR> echo 'What'
-"nnoremap <CR> o<Esc>
-"nnoremap <S-CR> i<CR><Esc> " Needed for GVIm
-"map <C-CR> ggVG<ESC>`m
-
-"map <NL> :echo 'what'<CR>
-
-function What()
-
-    :execute "normal Gztgg"
-endfunction
 
 
 
@@ -773,10 +739,6 @@ else
     onoremap h ^
 endif
 
-
-" For going full screen in gvim (without Conemu :^/)
-":autocmd GUIEnter * call libcallnr("gvimfullscreen_64.dll", "ToggleFullScreen", 0)
-map <F11> :call libcallnr("gvimfullscreen_64.dll", "ToggleFullScreen", 0)<CR>
 
 
 
