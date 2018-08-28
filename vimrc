@@ -135,7 +135,8 @@ nnoremap <silent>gw- :exe "15winc >"<CR>
 nnoremap <silent>gw[ :exe "15winc <"<CR>
 nnoremap <silent>gw= :exe "15winc +"<CR>
 nnoremap <silent>gw] :exe "15winc -"<CR>
-nnoremap gif :e $MYVIMRC<cr>
+" nnoremap gif :e $MYVIMRC<cr>
+nnoremap gif :e ~/dotfiles/vimrc<cr>
 nnoremap gyr :w<cr> :so %<cr> :nohl<cr> :echo<cr>
 nnoremap gr @:
 nnoremap g0 :wqa<cr>
