@@ -276,7 +276,7 @@ Plugin 'epmatsw/ag.vim'
 if empty($CONEMUBUILD)
     Plugin 'OmniSharp/omnisharp-vim'
 endif
-
+Plugin 'liuchengxu/eleline.vim'
 
 
 
@@ -398,7 +398,7 @@ map gx :call HandleURL()<cr>
 
 
 
-
+let g:eleline_slim = 0
 
 
 
@@ -675,7 +675,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " currently using <Solarized Git> in ConEmu, molokai in Vim
         colorscheme jellybeans
 
-        hi Visual  ctermfg=black ctermbg=darkmagenta
+        hi Visual  ctermfg=black ctermbg=lightblue
         hi Search ctermfg=black ctermbg=green
         " hi Comment ctermfg=900 ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
         hi Comment ctermfg=496
