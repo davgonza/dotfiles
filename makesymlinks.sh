@@ -22,6 +22,7 @@ files="bash_aliases bashrc gitignore bash_profile gitconfig vimrc"    	  # list 
 
 # create dotfiles_old in homedir
 echo "Creating $olddir for backup of any existing dotfiles in ~"
+rm -r ~/dotfiles_old
 mkdir -p $olddir
 echo "...done"
 
@@ -32,7 +33,6 @@ echo "...done"
 
 # move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks 
 for file in $files; do
-    # TODO: if the "old" dotfile exists in ~, THEN move it to ~/olddir
 
     echo "Moving any existing dotfiles from ~ to $olddir"
     mv ~/.$file ~/dotfiles_old/

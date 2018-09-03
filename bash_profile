@@ -44,6 +44,3 @@ test_fun () {
 ## export PATH=$PATH:/cygdrive/c/src/arc
 ## Could not open input file: /cygdrive/c/src/arc/bin/../scripts/arcanist.php
 
-source ~/git-prompt.sh
-
-PROMPT_COMMAND='__posh_git_ps1 "\u@\h:\w " "\\\$ ";'$PROMPT_COMMAND
