@@ -42,7 +42,7 @@ filetype off
 behave mswin
 
 nnoremap s :w<cr>
-nnoremap g9s :w!<cr>
+nnoremap g9s :w !sudo tee %<CR>
 nnoremap <space> :
 
 " clipboard
