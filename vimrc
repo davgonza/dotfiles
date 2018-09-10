@@ -42,6 +42,7 @@ filetype off
 behave mswin
 
 nnoremap s :w<cr>
+nnoremap g9s :w!<cr>
 nnoremap <space> :
 
 " clipboard
@@ -122,8 +123,7 @@ let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 "————————————————————————————————————————————————————————————————————————————
 " CUSTOM 'G' MAPS
 "————————————————————————————————————————————————————————————————————————————
-imap gh <esc>
-vmap gh <esc>
+imap jj <esc>
 nnoremap gwl <C-w>v
 nnoremap gwj <c-w>s
 nnoremap gwu <c-w>q
