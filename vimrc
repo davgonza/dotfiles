@@ -145,6 +145,7 @@ nnoremap ga 1hi<space>
 nnoremap gnf :let @+ = expand("%:p")<cr>
 nnoremap g9n :sav ~/notes/
 nnoremap g9t :tabnew<CR>
+nnoremap g98 :call EasyFindReplace("", "")
 " reset encoding
 nnoremap g9e :set bomb<CR>
 
@@ -223,7 +224,7 @@ elseif has("win32")
 
     " The Silver Searcher
     if executable('ag')
-      set grepprg=ag\ --nogroup\ --nocolor
+      "set grepprg=ag\ --nogroup\ --nocolor
     endif
     
 
