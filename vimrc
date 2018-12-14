@@ -151,6 +151,9 @@ nnoremap g9e :set bomb<CR>
 
 " format table
 nnoremap g9f :%!column -t
+nnoremap grr ggVGP
+nnoremap gri :set tabstop=2<CR> :set softtabstop=0<CR> :set expandtab<CR> :set shiftwidth=2<CR> :set smarttab<CR>gg=G
+
 
 
 "nnoremap g9g :call NewFileName()<CR>
@@ -277,8 +280,9 @@ if empty($CONEMUBUILD)
     Plugin 'OmniSharp/omnisharp-vim'
 endif
 Plugin 'liuchengxu/eleline.vim'
-
-
+Plugin 'inkarkat/vim-spellcheck'
+Plugin 'inkarkat/vim-ingo-library'
+Plugin 'shinglyu/vim-codespell'
 
 
 
@@ -294,6 +298,7 @@ filetype plugin indent on            " required
 
 
 let g:OmniSharp_server_path = 'C:\src\omnisharp\OmniSharp.exe'
+let g:OmniSharp_start_server = 0
 
 
 augroup omnisharp_commands
@@ -480,7 +485,7 @@ let g:ctrlp_custom_ignore = {
 let g:ctrlp_by_filename = 1
 let g:ctrlp_use_caching = 0
 let g:ctrlp_lazy_update = 5
-let NERDTreeIgnore = ['\.xaml.cs$', '.*pdb.*', '.*Tests.*', '.*bin.*', '.*obj.*', '.*feature.cs.*']
+let NERDTreeIgnore = ['\.xaml.cs$', '.*pdb.*', '.*Tests.*', '.*\bin.*', '.*obj.*', '.*feature.cs.*']
 let g:NERDTreeFileExtensionHighlightFullName = 1
 let g:NERDTreeExactMatchHighlightFullName = 1
 let g:NERDTreePatternMatchHighlightFullName = 1
@@ -613,7 +618,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         endif
     endfunction
 
-    inoremap <C-n> <C-R>=SuperCleverTab()<cr>
+    inoremap <C-b> <C-R>=SuperCleverTab()<cr>
 
 
     " hack; highlighting doesn't work when doing normal n unless nohlsearch is
@@ -631,7 +636,6 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
 
         " colorscheme delek
         colorscheme jellybeans
-        hi Visual  guifg=black guibg=magenta
 
         set guioptions-=T  "remove toolbar
         set guioptions-=L
@@ -639,7 +643,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         set guifont=DroidSansMono_Nerd_Font_Mono:h9:cANSI:qDRAFT
 
         " text highlighting
-        hi Visual  guifg=Black guibg=white
+        hi Visual  guifg=white guibg=magenta
     endif
 
     " NOTE: specifically for vim in conemu
@@ -1247,4 +1251,66 @@ function MyTabLabel(n)
   let fileName = pathList[len(pathList)-1]
 
   return fileName
+endfunction
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function BibleLookup(lookup)
+  let lookup = a:lookup
+  let fullDir = "C:/src/misc/bible-text-files/"
+
+  let splitByNumbers = split(lookup, '[A-z]\|:')
+  let verse = splitByNumbers[len(splitByNumbers)-1]
+  let chapter = splitByNumbers[len(splitByNumbers)-2]
+
+  let splitByGroupedLetters = split(lookup, '[0-9]')
+
+  let unsanitizedBook = splitByGroupedLetters[0]
+
+  " sanitize
+  let sanitized = toupper(unsanitizedBook[0]) . strpart(unsanitizedBook, 1, len(unsanitizedBook))
+
+  " combine
+  let book = ((len(splitByNumbers) == 2) ? "" : splitByNumbers[0]) . sanitized
+  let allBibleBookFileNames = systemlist('dir /b C:\src\misc\bible-text-files')
+
+  for fileName in allBibleBookFileNames
+    let trimmed = strpart(fileName, 7, 100)
+    let trimmed = fnamemodify(trimmed, ":r")
+
+    if trimmed =~ (book . "_E")
+      let fullDir = fullDir . fileName
+
+      "echo "it worked"
+
+      break
+    endif
+  endfor
+
+  let command = ":tabnew " . substitute(fullDir, '', '', '')
+  execute command
+  execute "normal ggjjyo"
+
+  let currentClipboard = @+
+
+  let search = "/" . currentClipboard . " " . chapter
+  execute search
+  execute "normal n"
 endfunction
