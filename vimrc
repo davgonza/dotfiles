@@ -1,4 +1,5 @@
 ﻿" to normalize line endings in vim, try the following:
+
 " %s/^M$//g
 " on a mac, that's Ctrl+V,M for ^M symbol
 " another easy way :w! ++ff=unix
@@ -23,9 +24,9 @@ set enc=utf-8
 set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=ucs-bom,utf8,prc
-set statusline=%<%F\ %h%m%r%=%-14.(%l/%L,%c%V%)\ %P
+set statusline=%<%F\ %h%m%r%=%-14.(%l/%L%V%)\ %P
 let mapleader = ","
-let &showbreak = ' ◄◄ '
+let &showbreak = ' ?? '
 let &showbreak = '>>>>'
 set undodir=~/tmp//
 set backupdir=~/tmp//
@@ -62,9 +63,13 @@ nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
 nnoremap <leader>gg :CtrlP C:\\SRC\\symlinks<cr>
 map <C-k><C-d> <plug>NERDCommenterToggle
+  
+let g:ctrlp_map = '<c-9>'
 
 " for focusing quickfix window
 nnoremap <leader>q <c-w>b
+nnoremap <C-p> :lprevious<CR>
+nnoremap <C-n> :lnext<CR>
 
 nnoremap h g^
 nnoremap l g$
@@ -74,7 +79,7 @@ nnoremap 1l l
 
 nnoremap co "_ciw
 nnoremap vo viw
-nnoremap do diw
+nnoremap do "_diw
 noremap yo yiw
 nnoremap yu ^y$
 nnoremap du ^d$
@@ -120,9 +125,9 @@ let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 
 
 
-"————————————————————————————————————————————————————————————————————————————
+"
 " CUSTOM 'G' MAPS
-"————————————————————————————————————————————————————————————————————————————
+"
 imap jj <esc>
 nnoremap gwl <C-w>v
 nnoremap gwj <c-w>s
@@ -145,6 +150,8 @@ nnoremap ga 1hi<space>
 nnoremap gnf :let @+ = expand("%:p")<cr>
 nnoremap g9n :sav ~/notes/
 nnoremap g9t :tabnew<CR>
+nnoremap <C-h> gT
+nnoremap <C-l> gt
 nnoremap g98 :call EasyFindReplace("", "")
 " reset encoding
 nnoremap g9e :set bomb<CR>
@@ -205,9 +212,9 @@ nnoremap gfl :%s/\\r\\n/
 
 
 
-"————————————————————————————————————————————————————————————————————————————
+"
 " vundle will have different save paths
-"————————————————————————————————————————————————————————————————————————————
+"
 if has("unix")
 	hi Visual  ctermfg=white ctermbg=magenta gui=none
 
@@ -276,14 +283,20 @@ Plugin 'JazzCore/ctrlp-cmatcher'
 Plugin 'epmatsw/ag.vim'
 
 " only load omnisharp, when not inside conemu
+" actually, please ignore omnisharp for now. thanks
+"if empty($CONEMUBUILD)
+    "Plugin 'OmniSharp/omnisharp-vim'
+"endif
+
+" only load eleline when not inside conemu :/
 if empty($CONEMUBUILD)
-    Plugin 'OmniSharp/omnisharp-vim'
+    Plugin 'liuchengxu/eleline.vim'
 endif
-Plugin 'liuchengxu/eleline.vim'
+
 Plugin 'inkarkat/vim-spellcheck'
 Plugin 'inkarkat/vim-ingo-library'
 Plugin 'shinglyu/vim-codespell'
-
+Plugin 'vim-airline/vim-airline'
 
 
 
@@ -418,9 +431,9 @@ autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 
 
 
-"————————————————————————————————————————————————————————————————————————————
+"
 " OVERWRITES DEFAULT COPY + PASTE BEHAVIOUR
-"———————————————————————————————————————————————————————————————————————————
+"
 nnoremap x "_dl
 vnoremap x "_d
 nnoremap dx "_dd
@@ -438,11 +451,11 @@ vnoremap p "_dp
 map <leader>y "*y
 
 
-"————————————————————————————————————————————————————————————————————————————
+"
 " Colors + Themes
-"————————————————————————————————————————————————————————————————————————————
+"
 " Setting the theme for Vim in powershell is kind of cumbersome, basically:
-"————————————————————————————————————————————————————————————————————————————
+"
 " download registry file here: https://github.com/reideast/cmd-colors-monokai
 " and then "regedit /s C:\SRC\even_folder\monokai.reg"
 "   OR new way: just run the .reg file
@@ -451,9 +464,9 @@ map <leader>y "*y
 
 
 
-"————————————————————————————————————————————————————————————————————————————
+"
 " Remaps for plugins
-"————————————————————————————————————————————————————————————————————————————
+"
 
 " looks weird, but it only remaps in normal mode
 let g:NumberToggleTrigger="<C-h>"
@@ -526,7 +539,7 @@ function! FileHistory()
 
     let filePath = expand("%:p")
 
-    :execute "silent Glog -30 -- " . filePath
+    :execute "silent Glog -200 -- " . filePath
     :execute "cw"
     :execute "normal ,b"
 endfunction
@@ -585,9 +598,9 @@ setlocal foldexpr=matchstr(substitute(getline(v:lnum),'\|.*','',''),'^.*/')==#ma
 
 
 
-"————————————————————————————————————————————————————————————————————————————
+"
 " vsvim (visual studio) and terminal keymaps
-"————————————————————————————————————————————————————————————————————————————
+"
 " if this is a terminal (including mingw ) OR gvim. Basically if
 " it's not VsVim (Vim for visual studio)
 if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_running')
@@ -635,7 +648,8 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " colorscheme molokai
 
         " colorscheme delek
-        colorscheme jellybeans
+        " colorscheme jellybeans
+        colorscheme torte
 
         set guioptions-=T  "remove toolbar
         set guioptions-=L
@@ -644,6 +658,9 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
 
         " text highlighting
         hi Visual  guifg=white guibg=magenta
+    
+        " reset it, but only for gvim
+        nnoremap go viwP
     endif
 
     " NOTE: specifically for vim in conemu
@@ -674,16 +691,6 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
 
         let &showbreak = ' ~~ '
 
-        " this part is pretty nice, because ConEmu can have its own colorscheme,
-        " but as soon as Vim gets activated, this colorscheme will take over
-        " currently using <Solarized Git> in ConEmu, molokai in Vim
-        colorscheme jellybeans
-
-        hi Visual  ctermfg=black ctermbg=lightblue
-        hi Search ctermfg=black ctermbg=green
-        " hi Comment ctermfg=900 ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
-        hi Comment ctermfg=496
-
 
 
         :hi TabLineFill ctermfg=LightGreen ctermbg=DarkGreen
@@ -709,6 +716,16 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         execute "set <M-l>=\el"
         nnoremap <M-l> <C-w>l
 
+        set term=win32
+
+        " this part is pretty nice, because ConEmu can have its own colorscheme,
+        " but as soon as Vim gets activated, this colorscheme will take over
+        " currently using <Solarized Git> in ConEmu, molokai in Vim
+        " colorscheme jellybeans
+        "
+        " protip... when messing around with term, and such maybe try just
+        " rearranging where you assign colorscheme... could save you bunch
+        colorscheme torte
     else
         " Else, if it's not ConEmu, I want this mapping to work with others
         " like Gvim, Powershell, etc.
@@ -725,7 +742,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         hi Visual  guifg=black guibg=magenta
         hi Search guifg=white guibg=#009999
 
-        let &showbreak = ' ◄◄ '
+        let &showbreak = ' ?? '
 
         let g:ctrlp_prompt_mappings = {
             \ 'PrtInsert("c")':       ['g)']
@@ -756,7 +773,7 @@ function! ToggleChars()
     if s:activatedh == 0
         let s:activatedh = 1
 
-        set listchars=tab:▸\ ,space:·
+        set listchars=tab:?\ ,space:·
         " listchars defined above
         set list
         highlight ExtraWhitespace ctermbg=red guibg=red
@@ -799,12 +816,12 @@ function! GrepInProject(regex)
     let cproject = join(f_path, "/")
 
     if IsClient() == 1
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
+        :execute "silent lgrep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     else
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.hcg --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
+        :execute "silent lgrep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.hcg --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     endif
 
-    :execute "cw"
+    :execute "lopen"
     :execute "normal \,b"
 endfunction
 
@@ -852,9 +869,9 @@ function! GrepInSolution(regex, singleFilter)
         let solution = solution . "Server"
     endif
 
-    :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "'" . " " . includeStr . " --exclude-dir=obj --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
+    :execute "silent lgrep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "'" . " " . includeStr . " --exclude-dir=obj --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
 
-    :execute "cw"
+    :execute "lopen"
     :execute "normal \,b"
 endfunction
 
@@ -1258,6 +1275,7 @@ endfunction
 
 
 
+set guitablabel=%t 
 
 
 
@@ -1271,12 +1289,13 @@ endfunction
 
 
 
+nnoremap gib :call BibleLookup("")<LEFT><LEFT>
 
 function BibleLookup(lookup)
   let lookup = a:lookup
   let fullDir = "C:/src/misc/bible-text-files/"
 
-  let splitByNumbers = split(lookup, '[A-z]\|:')
+  let splitByNumbers = split(lookup, '[A-z]\|,')
   let verse = splitByNumbers[len(splitByNumbers)-1]
   let chapter = splitByNumbers[len(splitByNumbers)-2]
 
@@ -1304,13 +1323,40 @@ function BibleLookup(lookup)
     endif
   endfor
 
-  let command = ":tabnew " . substitute(fullDir, '', '', '')
+  let command = ":tabnew " . substitute(fullDir, '
+', '', '')
   execute command
-  execute "normal ggjjyo"
 
-  let currentClipboard = @+
+  execute "normal G"
 
-  let search = "/" . currentClipboard . " " . chapter
+  let search = "?Chapter \\<" . chapter . "\\>"
   execute search
-  execute "normal n"
+
+  let search = "/\\<" . verse . "\\>"
+  execute search
+
+  execute "normal f" . verse
+
 endfunction
+
+
+
+
+"Chapter 14
+"1 Now in the days of Am'raphel king of Shi'nar, Ar'ioch king of Ella'sar, Chedorlao'mer king of E'lam, and Ti'dal king of Goi'im, 2 these made war with Be'ra king of Sod'om, Bir'sha king of Gomor'rah, Shi'nab king of Ad'mah, Sheme'ber king of Zeboi'im, and the king of Be'la, that is, Zo'ar. 3 All of these joined forces at the Valley of Sid'dim, that is, the Salt Sea.
+
+
+
+
+
+
+
+
+
+" HACK: try applying conemu schemes at the end
+if !empty($CONEMUBUILD)
+    hi Visual  ctermfg=white    ctermbg=darkblue
+    hi Search  ctermfg=black    ctermbg=magenta
+    hi Comment ctermfg=darkgray ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
+endif
+
