@@ -3,7 +3,6 @@
 " on a mac, that's Ctrl+V,M for ^M symbol
 " another easy way :w! ++ff=unix
 set nocompatible                " vi compatible is LAME
-
 set ai                          " set auto-indenting on for programming
 set vb                          " turn on the "visual bell" - which is much quieter than the "audio blink"
 set ruler                       " show the cursor position all the time
@@ -35,18 +34,22 @@ set wrap
 set cpo=n
 set scrolloff=3
 set autoread
+autocmd SwapExists * let v:swapchoice = "o"                                            
+let &statusline .= '%{(&readonly || !&modifiable) ? " <EE><82><A2>" : ""} <EE><82><B1>'
 
 syntax on                       " turn syntax highlighting on by default
 filetype off
 behave mswin
 
 nnoremap s :w<cr>
+nnoremap g9s :w !sudo tee %<CR>
 nnoremap <space> :
 
 " clipboard
 " let @+ =
+"
 
-" uses git for indexing, and provides a faster prompt overall
+
 nnoremap <leader>a gg"*yG<c-o><c-o>zz
 nnoremap <leader>b <c-w>p
 nnoremap <leader>e :nohl<cr> :echo<cr>
@@ -57,8 +60,7 @@ nnoremap <leader>z :NERDTreeFind<cr> :redraw!<cr>
 nnoremap <leader>s :CtrlP C:\\SRC\\Admin\\JW.Admin.Server<cr>
 nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
-" nnoremap <leader>r :CtrlPLastMode C:\\SRC\\Admin<cr>
-"nnoremap <leader><tab> :NERDTreeFocus<cr> :redraw!<cr>
+nnoremap <leader>gg :CtrlP C:\\SRC\\symlinks<cr>
 map <C-k><C-d> <plug>NERDCommenterToggle
 
 " for focusing quickfix window
@@ -106,38 +108,16 @@ nnoremap - W
 map <C-j> :cn<CR>zz
 map <C-k> :cp<CR>
 
-" The Silver Searcher
-if executable('ag')
-  " set grepprg=ag\ --nogroup\ --nocolor
-endif
 
 let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 
 
 
-"if &diff
-    "" less confusing diffs...
-
-    "colorscheme bw
-    "syntax off
-    "hi DiffAdd      cterm=none    ctermfg=White         ctermbg=Green
-    "hi DiffChange   cterm=none    ctermfg=White         ctermbg=none
-    "hi DiffDelete   cterm=bold    ctermfg=White         ctermbg=red
-    "hi DiffText     cterm=none    ctermfg=White         ctermbg=darkmagenta
-
-    "hi DiffAdd      gui=none      guifg=NONE            guibg=#bada9f
-    "hi DiffChange   gui=none      guifg=NONE            guibg=#e5d5ac
-    "hi DiffDelete   gui=bold      guifg=#ff8080         guibg=#ffb0b0
-    "hi DiffText     gui=none      guifg=NONE            guibg=#8cbee2
-
-"endif
 
 
 
 
 
-
-"nnoremap g<tab> :wincmd J<cr>
 
 
 "————————————————————————————————————————————————————————————————————————————
@@ -154,7 +134,8 @@ nnoremap <silent>gw- :exe "15winc >"<CR>
 nnoremap <silent>gw[ :exe "15winc <"<CR>
 nnoremap <silent>gw= :exe "15winc +"<CR>
 nnoremap <silent>gw] :exe "15winc -"<CR>
-nnoremap gif :e $MYVIMRC<cr>
+" nnoremap gif :e $MYVIMRC<cr>
+nnoremap gif :e ~/dotfiles/vimrc<cr>
 nnoremap gyr :w<cr> :so %<cr> :nohl<cr> :echo<cr>
 nnoremap gr @:
 nnoremap g0 :wqa<cr>
@@ -164,11 +145,15 @@ nnoremap ga 1hi<space>
 nnoremap gnf :let @+ = expand("%:p")<cr>
 nnoremap g9n :sav ~/notes/
 nnoremap g9t :tabnew<CR>
+nnoremap g98 :call EasyFindReplace("", "")
 " reset encoding
 nnoremap g9e :set bomb<CR>
 
 " format table
 nnoremap g9f :%!column -t
+nnoremap grr ggVGP
+nnoremap gri :set tabstop=2<CR> :set softtabstop=0<CR> :set expandtab<CR> :set shiftwidth=2<CR> :set smarttab<CR>gg=G
+
 
 
 "nnoremap g9g :call NewFileName()<CR>
@@ -192,7 +177,6 @@ nnoremap gio :call GrepInOtherProject("<C-R><C-W>", "Bethel Field Education Pers
 nnoremap <leader>gs :call ClipboardServer()<cr>
 nnoremap <leader>gc :call ClipboardClient()<cr>
 nnoremap <leader>ga :call ToggleHiddenAll()<CR> :echo<cr>
-nnoremap <leader>gc :call RefreshScreen()<CR> :echo<cr>
 nnoremap <leader>lc :let @+=@:<CR>
 
 nnoremap gnn :call GetFileName()<cr>
@@ -238,8 +222,26 @@ if has("unix")
 elseif has("win32")
     " beloved windows
     hi Visual  ctermfg=Black ctermbg=white gui=none
+
+    let g:agprg="C:/ProgramData/chocolatey/bin/ag.exe --column"
+
+    " The Silver Searcher
+    if executable('ag')
+      "set grepprg=ag\ --nogroup\ --nocolor
+    endif
+    
+
+
+
+
+
+
+
     
     source ~/vimfiles/bundle/colorstepper/colorstepper.vim
+
+
+
 
     set rtp+=~/vimfiles/bundle/Vundle.vim/
     set rtp+=~/fzf
@@ -271,14 +273,16 @@ Plugin 'ryanoasis/vim-devicons'
 Plugin 'tpope/vim-markdown'
 Plugin 'sotte/presenting.vim'
 Plugin 'JazzCore/ctrlp-cmatcher'
+Plugin 'epmatsw/ag.vim'
 
 " only load omnisharp, when not inside conemu
 if empty($CONEMUBUILD)
     Plugin 'OmniSharp/omnisharp-vim'
 endif
-
-
-
+Plugin 'liuchengxu/eleline.vim'
+Plugin 'inkarkat/vim-spellcheck'
+Plugin 'inkarkat/vim-ingo-library'
+Plugin 'shinglyu/vim-codespell'
 
 
 
@@ -294,6 +298,7 @@ filetype plugin indent on            " required
 
 
 let g:OmniSharp_server_path = 'C:\src\omnisharp\OmniSharp.exe'
+let g:OmniSharp_start_server = 0
 
 
 augroup omnisharp_commands
@@ -331,8 +336,8 @@ augroup omnisharp_commands
 
 
     " Navigate up and down by method/property/field
-    autocmd FileType cs nnoremap <buffer> <C-k> :OmniSharpNavigateUp<CR>
-    autocmd FileType cs nnoremap <buffer> <C-j> :OmniSharpNavigateDown<CR>
+    " autocmd FileType cs nnoremap <buffer> <C-k> :OmniSharpNavigateUp<CR>
+    " autocmd FileType cs nnoremap <buffer> <C-j> :OmniSharpNavigateDown<CR>
 augroup END
 
 " Contextual code actions (uses fzf, CtrlP or unite.vim when available)
@@ -360,21 +365,6 @@ let g:SuperTabDefaultCompletionType = 'context'
 "let g:SuperTabDefaultCompletionTypeDiscovery = ["&omnifunc:<c-n>","&completefunc:<c-n>"]
 let g:SuperTabClosePreviewOnPopupClose = 1
 
-function! SuperCleverTab()
-    if strpart(getline('.'), 0, col('.') - 1) =~ '^\s*$'
-        return "\<Tab>"
-    else
-        if &omnifunc != ''
-            return "\<C-X>\<C-O>"
-        elseif &dictionary != ''
-            return "\<C-K>"
-        else
-            return "\<C-N>"
-        endif
-    endif
-endfunction
-
-inoremap <C-n> <C-R>=SuperCleverTab()<cr>
 
 
 
@@ -413,7 +403,7 @@ map gx :call HandleURL()<cr>
 
 
 
-
+let g:eleline_slim = 0
 
 
 
@@ -469,11 +459,20 @@ map <leader>y "*y
 let g:NumberToggleTrigger="<C-h>"
 
 
+let g:ctrlp_clear_cache_on_exit = 0
+let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
+let g:ctrlp_follow_symlinks=1
+
+
+
+
 if !empty(glob("c:/program files/git/usr/bin/grep.exe"))
   let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | "c:\program files\git\usr\bin\grep.exe" -v "xaml.cs$"']
 else
   let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | grep -v "xaml.cs$"']
 endif
+
+
 
 " let g:ctrlp_user_command = 'fd --type f --color=never "" %s'
 
@@ -495,7 +494,7 @@ let g:ctrlp_custom_ignore = {
 let g:ctrlp_by_filename = 1
 let g:ctrlp_use_caching = 0
 let g:ctrlp_lazy_update = 5
-let NERDTreeIgnore = ['\.xaml.cs$', '.*pdb.*', '.*Tests.*', '.*bin.*', '.*obj.*', '.*feature.cs.*']
+let NERDTreeIgnore = ['\.xaml.cs$', '.*pdb.*', '.*Tests.*', '.*\bin.*', '.*obj.*', '.*feature.cs.*']
 let g:NERDTreeFileExtensionHighlightFullName = 1
 let g:NERDTreeExactMatchHighlightFullName = 1
 let g:NERDTreePatternMatchHighlightFullName = 1
@@ -582,18 +581,6 @@ au TabLeave * let g:lasttab = tabpagenr()
 
 
 let loaded_matchparen = 1
-"map <S-CR> mmggVG<ESC>`m
-"map <S-CR> echo 'What'
-"nnoremap <CR> o<Esc>
-"nnoremap <S-CR> i<CR><Esc> " Needed for GVIm
-"map <C-CR> ggVG<ESC>`m
-
-"map <NL> :echo 'what'<CR>
-
-function What()
-
-    :execute "normal Gztgg"
-endfunction
 
 
 
@@ -625,6 +612,24 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
     nnoremap <expr> k v:count ? 'k' : 'gk'
     nnoremap / /\\c
 
+
+    function! SuperCleverTab()
+        if strpart(getline('.'), 0, col('.') - 1) =~ '^\s*$'
+            return "\<Tab>"
+        else
+            if &omnifunc != ''
+                return "\<C-X>\<C-O>"
+            elseif &dictionary != ''
+                return "\<C-K>"
+            else
+                return "\<C-N>"
+            endif
+        endif
+    endfunction
+
+    inoremap <C-b> <C-R>=SuperCleverTab()<cr>
+
+
     " hack; highlighting doesn't work when doing normal n unless nohlsearch is
     " used before the method call
     noremap n :set nohlsearch\|:call SearchNext()<CR>
@@ -640,7 +645,6 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
 
         " colorscheme delek
         colorscheme jellybeans
-        hi Visual  guifg=black guibg=magenta
 
         set guioptions-=T  "remove toolbar
         set guioptions-=L
@@ -648,7 +652,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         set guifont=DroidSansMono_Nerd_Font_Mono:h9:cANSI:qDRAFT
 
         " text highlighting
-        hi Visual  guifg=Black guibg=white
+        hi Visual  guifg=white guibg=magenta
     endif
 
     " NOTE: specifically for vim in conemu
@@ -656,10 +660,20 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         set mouse=a
         set term=xterm
 
+        " NOTE: not even actually sure if this even works anymore, as we are
+        " handling it through ConEmu now.
+        "
         "inoremap <Esc>[62~ <C-X>4<C-E>
         "inoremap <Esc>[63~ <C-X>4<C-Y>
-        nnoremap <Esc>[62~ 4<C-E>
-        nnoremap <Esc>[63~ 4<C-Y>
+        "nnoremap <Esc>[62~ 4<C-E>
+        "nnoremap <Esc>[63~ 4<C-Y>
+
+        " weird options for using ConEmu with xterm set
+        " This will sometimes cause characters to be entered, when scrolling
+        " really fast through a document. Must set "ttimeoutlen" to small value
+        inoremap <Char-0x07F> <BS>
+        nnoremap <Char-0x07F> <BS>
+        cnoremap <Char-0x07F> <BS>
 
         " perhaps `nocompatible` is not required
         set nocompatible
@@ -674,17 +688,11 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " currently using <Solarized Git> in ConEmu, molokai in Vim
         colorscheme jellybeans
 
-        hi Visual  ctermfg=black ctermbg=darkmagenta
+        hi Visual  ctermfg=black ctermbg=lightblue
         hi Search ctermfg=black ctermbg=green
         " hi Comment ctermfg=900 ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
         hi Comment ctermfg=496
 
-        " weird options for using ConEmu with xterm set
-        " This will sometimes cause characters to be entered, when scrolling
-        " really fast through a document. Must set "ttimeoutlen" to small value
-        inoremap <Char-0x07F> <BS>
-        nnoremap <Char-0x07F> <BS>
-        cnoremap <Char-0x07F> <BS>
 
 
         :hi TabLineFill ctermfg=LightGreen ctermbg=DarkGreen
@@ -745,10 +753,6 @@ else
     onoremap h ^
 endif
 
-
-" For going full screen in gvim (without Conemu :^/)
-":autocmd GUIEnter * call libcallnr("gvimfullscreen_64.dll", "ToggleFullScreen", 0)
-map <F11> :call libcallnr("gvimfullscreen_64.dll", "ToggleFullScreen", 0)<CR>
 
 
 
@@ -1256,4 +1260,66 @@ function MyTabLabel(n)
   let fileName = pathList[len(pathList)-1]
 
   return fileName
+endfunction
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function BibleLookup(lookup)
+  let lookup = a:lookup
+  let fullDir = "C:/src/misc/bible-text-files/"
+
+  let splitByNumbers = split(lookup, '[A-z]\|:')
+  let verse = splitByNumbers[len(splitByNumbers)-1]
+  let chapter = splitByNumbers[len(splitByNumbers)-2]
+
+  let splitByGroupedLetters = split(lookup, '[0-9]')
+
+  let unsanitizedBook = splitByGroupedLetters[0]
+
+  " sanitize
+  let sanitized = toupper(unsanitizedBook[0]) . strpart(unsanitizedBook, 1, len(unsanitizedBook))
+
+  " combine
+  let book = ((len(splitByNumbers) == 2) ? "" : splitByNumbers[0]) . sanitized
+  let allBibleBookFileNames = systemlist('dir /b C:\src\misc\bible-text-files')
+
+  for fileName in allBibleBookFileNames
+    let trimmed = strpart(fileName, 7, 100)
+    let trimmed = fnamemodify(trimmed, ":r")
+
+    if trimmed =~ (book . "_E")
+      let fullDir = fullDir . fileName
+
+      "echo "it worked"
+
+      break
+    endif
+  endfor
+
+  let command = ":tabnew " . substitute(fullDir, '', '', '')
+  execute command
+  execute "normal ggjjyo"
+
+  let currentClipboard = @+
+
+  let search = "/" . currentClipboard . " " . chapter
+  execute search
+  execute "normal n"
 endfunction

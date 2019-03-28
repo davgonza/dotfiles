@@ -44,7 +44,6 @@ test_fun () {
 ## export PATH=$PATH:/cygdrive/c/src/arc
 ## Could not open input file: /cygdrive/c/src/arc/bin/../scripts/arcanist.php
 
-source ~/git-prompt.sh
 
 PROMPT_COMMAND='__posh_git_ps1 "\u@\h:\w " "\\\$ ";'$PROMPT_COMMAND
 eval "$(rbenv init -)"
@@ -57,3 +56,4 @@ PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
 
 export DATABASE_URL=postgres://localhost
 ## export DATABASE_URL=postgres://$(whoami)
+source ~/git-prompt.sh
