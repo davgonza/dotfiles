@@ -143,8 +143,7 @@ let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 "————————————————————————————————————————————————————————————————————————————
 " CUSTOM 'G' MAPS
 "————————————————————————————————————————————————————————————————————————————
-imap gh <esc>
-vmap gh <esc>
+imap jj <esc>
 nnoremap gwl <C-w>v
 nnoremap gwj <c-w>s
 nnoremap gwu <c-w>q
@@ -470,7 +469,11 @@ map <leader>y "*y
 let g:NumberToggleTrigger="<C-h>"
 
 
-let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | "c:\program files\git\usr\bin\grep.exe" -v "xaml.cs$"']
+if !empty(glob("c:/program files/git/usr/bin/grep.exe"))
+  let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | "c:\program files\git\usr\bin\grep.exe" -v "xaml.cs$"']
+else
+  let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | grep -v "xaml.cs$"']
+endif
 
 " let g:ctrlp_user_command = 'fd --type f --color=never "" %s'
 

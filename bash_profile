@@ -47,3 +47,13 @@ test_fun () {
 source ~/git-prompt.sh
 
 PROMPT_COMMAND='__posh_git_ps1 "\u@\h:\w " "\\\$ ";'$PROMPT_COMMAND
+eval "$(rbenv init -)"
+eval "$(rbenv init -)"
+
+
+
+
+PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
+
+export DATABASE_URL=postgres://localhost
+## export DATABASE_URL=postgres://$(whoami)
