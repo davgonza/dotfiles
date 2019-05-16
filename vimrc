@@ -79,7 +79,7 @@ nnoremap 1l l
 
 nnoremap co "_ciw
 nnoremap vo viw
-nnoremap do "_diw
+nnoremap do diw
 noremap yo yiw
 nnoremap yu ^y$
 nnoremap du ^d$
@@ -118,6 +118,9 @@ let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 
 
 
+" global variables
+let g:isConEmu = !empty($CONEMUBUILD)
+
 
 
 
@@ -155,6 +158,7 @@ nnoremap <C-l> gt
 nnoremap g98 :call EasyFindReplace("", "")
 " reset encoding
 nnoremap g9e :set bomb<CR>
+nnoremap g6g :e C:/src/Admin/JW.Admin.Server/JW.Admin.DocumentManagement.ServiceInterface/Documents/DocumentRecordSummaryManager.cs<CR>
 
 " format table
 nnoremap g9f :%!column -t
@@ -289,13 +293,14 @@ Plugin 'epmatsw/ag.vim'
 "endif
 
 " only load eleline when not inside conemu :/
-if empty($CONEMUBUILD)
+if !g:isConEmu
     Plugin 'liuchengxu/eleline.vim'
 endif
 
 Plugin 'inkarkat/vim-spellcheck'
 Plugin 'inkarkat/vim-ingo-library'
 Plugin 'shinglyu/vim-codespell'
+
 Plugin 'vim-airline/vim-airline'
 
 
@@ -448,6 +453,7 @@ vnoremap C "_C
 
 " register
 vnoremap p "_dp
+vnoremap P "_dP
 map <leader>y "*y
 
 
@@ -606,7 +612,7 @@ setlocal foldexpr=matchstr(substitute(getline(v:lnum),'\|.*','',''),'^.*/')==#ma
 if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_running')
 
     " used to be nnoremap go viw"0p
-    nnoremap go viw"0p
+    nnoremap go viw"_dP
 
     " fixes the problem when jumping up a 'count', with relative line
     " numbers on. if a v:count was not specified, then 'gj', move up visually a
@@ -644,6 +650,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " startup window size
         set lines=40 columns=150
         set guicursor+=n-v-c:blinkon0
+        set title titlestring=%(%{expand(\"%:t\")}%)\ -\ VIM
 
         " colorscheme molokai
 
@@ -653,6 +660,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
 
         set guioptions-=T  "remove toolbar
         set guioptions-=L
+        set guioptions-=m
 	    set guifont=Source_Code_Pro_Semibold:h9:cANSI:qDRAFT
         set guifont=DroidSansMono_Nerd_Font_Mono:h9:cANSI:qDRAFT
 
@@ -664,7 +672,7 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
     endif
 
     " NOTE: specifically for vim in conemu
-    if !empty($CONEMUBUILD)
+    if g:isConEmu
         set mouse=a
         set term=xterm
 
@@ -696,7 +704,6 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         :hi TabLineFill ctermfg=LightGreen ctermbg=DarkGreen
 
         let g:ctrlp_prompt_mappings = {
-            \ 'PrtInsert("c")':       ['g)'],
             \ 'PrtBS()': ['<Char-0x07F>', '<c-h>']
         \ }
 
@@ -733,21 +740,6 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         let g:ctrlp_prompt_mappings = {
             \ 'PrtInsert("c")':       ['g)'],
             \ }
-    endif
-
-    " NOTE: If in Gvim inside ConEmu
-    if has('gui_running') && has('gui_running')
-        :set guioptions-=m
-
-        hi Visual  guifg=black guibg=magenta
-        hi Search guifg=white guibg=#009999
-
-        let &showbreak = ' ?? '
-
-        let g:ctrlp_prompt_mappings = {
-            \ 'PrtInsert("c")':       ['g)']
-        \ }
-        "\ 'PrtBS()': ['<Char-0x07F>', '<c-h>']
     endif
 
 else
@@ -982,20 +974,31 @@ endfunction
 
 
 
-
+" ApplicantManager.cs
 
 function! ClipboardServer()
     let currentClipboard = @+
 
     exe "normal \,s"
-    exe "normal g)"
+
+    if g:isConEmu
+      exe "normal \<Insert>"
+    else
+      exe "normal g)"
+    endif
+
 endfunction
 
 function! ClipboardClient()
     let currentClipboard = @+
 
     exe "normal \,c"
-    exe "normal g)"
+
+    if g:isConEmu
+      exe "normal \<Insert>"
+    else
+      exe "normal g)"
+    endif
 endfunction
 
 
@@ -1030,7 +1033,12 @@ function! SimilarFile()
         endif
 
         exe "normal \,c"
-        exe "normal g)"
+
+        if g:isConEmu
+          exe "normal \<Insert>"
+        else
+          exe "normal g)"
+        endif
     else
         if currentFile =~ ".cs"
             let currentFile = strpart(currentFile, 0, len(currentFile)-3)
@@ -1048,7 +1056,12 @@ function! SimilarFile()
 
         let @+ = currentFile
         exe "normal \,s"
-        exe "normal g)"
+
+        if g:isConEmu
+          exe "normal \<Insert>"
+        else
+          exe "normal g)"
+        endif
     endif
 
     let @+ = currentClipboard
@@ -1066,7 +1079,12 @@ function! UnderCursorInRepo(cursorWord)
         exe "normal \,s"
     endif
 
-    exe "normal g)"
+    if g:isConEmu
+      exe "normal \<Insert>"
+    else
+      exe "normal g)"
+    endif
+
     let @+ = currentClipboard
 endfunction
 
@@ -1214,6 +1232,8 @@ endif
 " notepad colorscheme
 "autocmd BufNewFile,BufRead *.txt   set guifont=Consolas:h15:cANSI:qDRAFT|colorscheme zellner|set lines=20 columns=100
 
+" xaml syntax highlighting
+autocmd BufNewFile,BufRead *.xaml set filetype=xml
 
 
 
@@ -1222,7 +1242,7 @@ endif
 " to use:
 " :set tabline=%!MyTabLine()
 
-" :set tabline=%!MyTabLine()
+set tabline=%!MyTabLine()
 
 function MyTabLine()
   let s = ''
@@ -1263,6 +1283,10 @@ function MyTabLabel(n)
     let pathList = split(curFilePath, '\')
   else
     let pathList = split(curFilePath, '/')
+  endif
+
+  if len(pathList) == 0
+    return "*new*"
   endif
 
   let fileName = pathList[len(pathList)-1]
@@ -1354,9 +1378,9 @@ endfunction
 
 
 " HACK: try applying conemu schemes at the end
-if !empty($CONEMUBUILD)
-    hi Visual  ctermfg=white    ctermbg=darkblue
-    hi Search  ctermfg=black    ctermbg=magenta
+if g:isConEmu
+    hi Visual  ctermfg=black    ctermbg=darkmagenta
+    hi Search  ctermfg=black    ctermbg=darkcyan
     hi Comment ctermfg=darkgray ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
 endif
 
