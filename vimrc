@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿" to normalize line endings in vim, try the following:
 
 " %s/^M$//g
@@ -482,7 +483,12 @@ let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
 let g:ctrlp_follow_symlinks=1
 
-let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | "c:\program files\git\usr\bin\grep.exe" -v "xaml.cs$"']
+if !empty(glob("c:/program files/git/usr/bin/grep.exe"))
+  let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | "c:\program files\git\usr\bin\grep.exe" -v "xaml.cs$"']
+else
+  let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | grep -v "xaml.cs$"']
+endif
+
 
 " let g:ctrlp_user_command = 'fd --type f --color=never "" %s'
 
