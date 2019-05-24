@@ -293,13 +293,11 @@ Plugin 'epmatsw/ag.vim'
     "Plugin 'OmniSharp/omnisharp-vim'
 "endif
 
-" only load eleline when not inside conemu :/
-if !g:isConEmu
-    Plugin 'liuchengxu/eleline.vim'
-endif
-
+" only load eleline when inside windows environment
 if has("win32")
     Plugin 'liuchengxu/eleline.vim'
+
+    let g:eleline_slim = 0
 endif
 
 Plugin 'inkarkat/vim-spellcheck'
@@ -425,8 +423,6 @@ endfunction
 map gx :call HandleURL()<cr>
 
 
-
-let g:eleline_slim = 0
 
 
 
