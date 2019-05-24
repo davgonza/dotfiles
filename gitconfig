@@ -25,7 +25,7 @@
     cp = "!{ git add .; git commit --amend; } ;"
     sa = stash save -u
     rem = clean -f
-    whoops = reset --soft HEAD~1
+    whoops = "!f() { git reset --soft HEAD~1; git reset .; }; f"
     save = "!f() { git add .; git commit -m \"$1\"; }; f"
     fo = fetch origin
     q = checkout master
@@ -51,6 +51,7 @@
     us = "branch --set-upstream-to origin/master"
     rb = "!f() { git add .; git rc; }; f"
     do = "!{ localBranch=`git rev-parse --abbrev-ref HEAD`; git diff master..$localBranch; } ;"
+    dow = "!{ localBranch=`git rev-parse --abbrev-ref HEAD`; git diff -W master..$localBranch; } ;"
 
 [color]
     ui = true

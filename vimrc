@@ -23,9 +23,9 @@ set enc=utf-8
 set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=ucs-bom,utf8,prc
-set statusline=%<%F\ %h%m%r%=%-14.(%l/%L,%c%V%)\ %P
+set statusline=%<%F\ %h%m%r%=%-14.(%l/%L%V%)\ %P
 let mapleader = ","
-let &showbreak = ' ◄◄ '
+let &showbreak = ' ?? '
 let &showbreak = '>>>>'
 set undodir=~/tmp//
 set backupdir=~/tmp//
@@ -62,9 +62,13 @@ nnoremap <leader>c :CtrlP C:\\SRC\\Admin\\JW.Admin.Client<cr>
 nnoremap <leader>d :CtrlP C:\\SRC\\Admin<cr>
 nnoremap <leader>gg :CtrlP C:\\SRC\\symlinks<cr>
 map <C-k><C-d> <plug>NERDCommenterToggle
+  
+let g:ctrlp_map = '<c-9>'
 
 " for focusing quickfix window
 nnoremap <leader>q <c-w>b
+nnoremap <C-p> :lprevious<CR>
+nnoremap <C-n> :lnext<CR>
 
 nnoremap h g^
 nnoremap l g$
@@ -113,6 +117,8 @@ let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 
 
 
+" global variables
+let g:isConEmu = !empty($CONEMUBUILD)
 
 
 
@@ -120,9 +126,10 @@ let &grepprg='"c:\program files\git\usr\bin\grep.exe" -rn'
 
 
 
-"————————————————————————————————————————————————————————————————————————————
+
+"
 " CUSTOM 'G' MAPS
-"————————————————————————————————————————————————————————————————————————————
+"
 imap jj <esc>
 nnoremap gwl <C-w>v
 nnoremap gwj <c-w>s
@@ -145,9 +152,12 @@ nnoremap ga 1hi<space>
 nnoremap gnf :let @+ = expand("%:p")<cr>
 nnoremap g9n :sav ~/notes/
 nnoremap g9t :tabnew<CR>
+nnoremap <C-h> gT
+nnoremap <C-l> gt
 nnoremap g98 :call EasyFindReplace("", "")
 " reset encoding
 nnoremap g9e :set bomb<CR>
+nnoremap g6g :e C:/src/Admin/JW.Admin.Server/JW.Admin.DocumentManagement.ServiceInterface/Documents/DocumentRecordSummaryManager.cs<CR>
 
 " format table
 nnoremap g9f :%!column -t
@@ -205,9 +215,9 @@ nnoremap gfl :%s/\\r\\n/
 
 
 
-"————————————————————————————————————————————————————————————————————————————
+"
 " vundle will have different save paths
-"————————————————————————————————————————————————————————————————————————————
+"
 if has("unix")
 	hi Visual  ctermfg=white ctermbg=magenta gui=none
 
@@ -278,17 +288,25 @@ Plugin 'JazzCore/ctrlp-cmatcher'
 Plugin 'epmatsw/ag.vim'
 
 " only load omnisharp, when not inside conemu
-if empty($CONEMUBUILD)
-    Plugin 'OmniSharp/omnisharp-vim'
+" actually, please ignore omnisharp for now. thanks
+"if empty($CONEMUBUILD)
+    "Plugin 'OmniSharp/omnisharp-vim'
+"endif
+
+" only load eleline when not inside conemu :/
+if !g:isConEmu
+    Plugin 'liuchengxu/eleline.vim'
 endif
 
 if has("win32")
     Plugin 'liuchengxu/eleline.vim'
 endif
+
 Plugin 'inkarkat/vim-spellcheck'
 Plugin 'inkarkat/vim-ingo-library'
 Plugin 'shinglyu/vim-codespell'
 
+Plugin 'vim-airline/vim-airline'
 
 
 
@@ -423,9 +441,9 @@ autocmd InsertLeave * if pumvisible() == 0|pclose|endif
 
 
 
-"————————————————————————————————————————————————————————————————————————————
+"
 " OVERWRITES DEFAULT COPY + PASTE BEHAVIOUR
-"———————————————————————————————————————————————————————————————————————————
+"
 nnoremap x "_dl
 vnoremap x "_d
 nnoremap dx "_dd
@@ -440,14 +458,15 @@ vnoremap C "_C
 
 " register
 vnoremap p "_dp
+vnoremap P "_dP
 map <leader>y "*y
 
 
-"————————————————————————————————————————————————————————————————————————————
+"
 " Colors + Themes
-"————————————————————————————————————————————————————————————————————————————
+"
 " Setting the theme for Vim in powershell is kind of cumbersome, basically:
-"————————————————————————————————————————————————————————————————————————————
+"
 " download registry file here: https://github.com/reideast/cmd-colors-monokai
 " and then "regedit /s C:\SRC\even_folder\monokai.reg"
 "   OR new way: just run the .reg file
@@ -456,9 +475,9 @@ map <leader>y "*y
 
 
 
-"————————————————————————————————————————————————————————————————————————————
+"
 " Remaps for plugins
-"————————————————————————————————————————————————————————————————————————————
+"
 
 " looks weird, but it only remaps in normal mode
 let g:NumberToggleTrigger="<C-h>"
@@ -468,15 +487,11 @@ let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
 let g:ctrlp_follow_symlinks=1
 
-
-
-
 if !empty(glob("c:/program files/git/usr/bin/grep.exe"))
   let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | "c:\program files\git\usr\bin\grep.exe" -v "xaml.cs$"']
 else
   let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others | grep -v "xaml.cs$"']
 endif
-
 
 
 " let g:ctrlp_user_command = 'fd --type f --color=never "" %s'
@@ -540,7 +555,7 @@ function! FileHistory()
 
     let filePath = expand("%:p")
 
-    :execute "silent Glog -30 -- " . filePath
+    :execute "silent Glog -200 -- " . filePath
     :execute "cw"
     :execute "normal ,b"
 endfunction
@@ -599,15 +614,15 @@ setlocal foldexpr=matchstr(substitute(getline(v:lnum),'\|.*','',''),'^.*/')==#ma
 
 
 
-"————————————————————————————————————————————————————————————————————————————
+"
 " vsvim (visual studio) and terminal keymaps
-"————————————————————————————————————————————————————————————————————————————
+"
 " if this is a terminal (including mingw ) OR gvim. Basically if
 " it's not VsVim (Vim for visual studio)
 if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_running')
 
     " used to be nnoremap go viw"0p
-    nnoremap go viw"0p
+    nnoremap go viw"_dP
 
     " fixes the problem when jumping up a 'count', with relative line
     " numbers on. if a v:count was not specified, then 'gj', move up visually a
@@ -645,23 +660,29 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         " startup window size
         set lines=40 columns=150
         set guicursor+=n-v-c:blinkon0
+        set title titlestring=%(%{expand(\"%:t\")}%)\ -\ VIM
 
         " colorscheme molokai
 
         " colorscheme delek
-        colorscheme jellybeans
+        " colorscheme jellybeans
+        colorscheme torte
 
         set guioptions-=T  "remove toolbar
         set guioptions-=L
+        set guioptions-=m
 	    set guifont=Source_Code_Pro_Semibold:h9:cANSI:qDRAFT
         set guifont=DroidSansMono_Nerd_Font_Mono:h9:cANSI:qDRAFT
 
         " text highlighting
         hi Visual  guifg=white guibg=magenta
+    
+        " reset it, but only for gvim
+        nnoremap go viwP
     endif
 
     " NOTE: specifically for vim in conemu
-    if !empty($CONEMUBUILD)
+    if g:isConEmu
         set mouse=a
         set term=xterm
 
@@ -688,22 +709,11 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
 
         let &showbreak = ' ~~ '
 
-        " this part is pretty nice, because ConEmu can have its own colorscheme,
-        " but as soon as Vim gets activated, this colorscheme will take over
-        " currently using <Solarized Git> in ConEmu, molokai in Vim
-        colorscheme jellybeans
-
-        hi Visual  ctermfg=black ctermbg=lightblue
-        hi Search ctermfg=black ctermbg=green
-        " hi Comment ctermfg=900 ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
-        hi Comment ctermfg=496
-
 
 
         :hi TabLineFill ctermfg=LightGreen ctermbg=DarkGreen
 
         let g:ctrlp_prompt_mappings = {
-            \ 'PrtInsert("c")':       ['g)'],
             \ 'PrtBS()': ['<Char-0x07F>', '<c-h>']
         \ }
 
@@ -723,6 +733,16 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         execute "set <M-l>=\el"
         nnoremap <M-l> <C-w>l
 
+        set term=win32
+
+        " this part is pretty nice, because ConEmu can have its own colorscheme,
+        " but as soon as Vim gets activated, this colorscheme will take over
+        " currently using <Solarized Git> in ConEmu, molokai in Vim
+        " colorscheme jellybeans
+        "
+        " protip... when messing around with term, and such maybe try just
+        " rearranging where you assign colorscheme... could save you bunch
+        colorscheme torte
     else
         " Else, if it's not ConEmu, I want this mapping to work with others
         " like Gvim, Powershell, etc.
@@ -730,21 +750,6 @@ if &term == 'win32' || &term == 'xterm-256color' || has('unix') || has('gui_runn
         let g:ctrlp_prompt_mappings = {
             \ 'PrtInsert("c")':       ['g)'],
             \ }
-    endif
-
-    " NOTE: If in Gvim inside ConEmu
-    if has('gui_running') && has('gui_running')
-        :set guioptions-=m
-
-        hi Visual  guifg=black guibg=magenta
-        hi Search guifg=white guibg=#009999
-
-        let &showbreak = ' ◄◄ '
-
-        let g:ctrlp_prompt_mappings = {
-            \ 'PrtInsert("c")':       ['g)']
-        \ }
-        "\ 'PrtBS()': ['<Char-0x07F>', '<c-h>']
     endif
 
 else
@@ -770,7 +775,7 @@ function! ToggleChars()
     if s:activatedh == 0
         let s:activatedh = 1
 
-        set listchars=tab:▸\ ,space:·
+        set listchars=tab:?\ ,space:·
         " listchars defined above
         set list
         highlight ExtraWhitespace ctermbg=red guibg=red
@@ -813,12 +818,12 @@ function! GrepInProject(regex)
     let cproject = join(f_path, "/")
 
     if IsClient() == 1
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
+        :execute "silent lgrep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.xaml --include \\*.resx --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     else
-        :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.hcg --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
+        :execute "silent lgrep -rn " . "'" . a:regex . "'" . ' ' . "'" . cproject . "' --include \\*.cs --include \\*.hcg --exclude-dir=obj --exclude-dir=bin --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
     endif
 
-    :execute "cw"
+    :execute "lopen"
     :execute "normal \,b"
 endfunction
 
@@ -866,9 +871,9 @@ function! GrepInSolution(regex, singleFilter)
         let solution = solution . "Server"
     endif
 
-    :execute "silent grep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "'" . " " . includeStr . " --exclude-dir=obj --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
+    :execute "silent lgrep -rn " . "'" . a:regex . "'" . ' ' . "'" . solution . "'" . " " . includeStr . " --exclude-dir=obj --exclude-dir=bin --exclude=*.g.i.cs --exclude=*.g.cs --exclude=*Resources.Designer.cs --exclude=*.feature.cs"
 
-    :execute "cw"
+    :execute "lopen"
     :execute "normal \,b"
 endfunction
 
@@ -979,20 +984,31 @@ endfunction
 
 
 
-
+" ApplicantManager.cs
 
 function! ClipboardServer()
     let currentClipboard = @+
 
     exe "normal \,s"
-    exe "normal g)"
+
+    if g:isConEmu
+      exe "normal \<Insert>"
+    else
+      exe "normal g)"
+    endif
+
 endfunction
 
 function! ClipboardClient()
     let currentClipboard = @+
 
     exe "normal \,c"
-    exe "normal g)"
+
+    if g:isConEmu
+      exe "normal \<Insert>"
+    else
+      exe "normal g)"
+    endif
 endfunction
 
 
@@ -1027,7 +1043,12 @@ function! SimilarFile()
         endif
 
         exe "normal \,c"
-        exe "normal g)"
+
+        if g:isConEmu
+          exe "normal \<Insert>"
+        else
+          exe "normal g)"
+        endif
     else
         if currentFile =~ ".cs"
             let currentFile = strpart(currentFile, 0, len(currentFile)-3)
@@ -1045,7 +1066,12 @@ function! SimilarFile()
 
         let @+ = currentFile
         exe "normal \,s"
-        exe "normal g)"
+
+        if g:isConEmu
+          exe "normal \<Insert>"
+        else
+          exe "normal g)"
+        endif
     endif
 
     let @+ = currentClipboard
@@ -1063,7 +1089,12 @@ function! UnderCursorInRepo(cursorWord)
         exe "normal \,s"
     endif
 
-    exe "normal g)"
+    if g:isConEmu
+      exe "normal \<Insert>"
+    else
+      exe "normal g)"
+    endif
+
     let @+ = currentClipboard
 endfunction
 
@@ -1211,6 +1242,8 @@ endif
 " notepad colorscheme
 "autocmd BufNewFile,BufRead *.txt   set guifont=Consolas:h15:cANSI:qDRAFT|colorscheme zellner|set lines=20 columns=100
 
+" xaml syntax highlighting
+autocmd BufNewFile,BufRead *.xaml set filetype=xml
 
 
 
@@ -1219,7 +1252,7 @@ endif
 " to use:
 " :set tabline=%!MyTabLine()
 
-" :set tabline=%!MyTabLine()
+set tabline=%!MyTabLine()
 
 function MyTabLine()
   let s = ''
@@ -1262,6 +1295,10 @@ function MyTabLabel(n)
     let pathList = split(curFilePath, '/')
   endif
 
+  if len(pathList) == 0
+    return "*new*"
+  endif
+
   let fileName = pathList[len(pathList)-1]
 
   return fileName
@@ -1272,6 +1309,7 @@ endfunction
 
 
 
+set guitablabel=%t 
 
 
 
@@ -1285,12 +1323,13 @@ endfunction
 
 
 
+nnoremap gib :call BibleLookup("")<LEFT><LEFT>
 
 function BibleLookup(lookup)
   let lookup = a:lookup
   let fullDir = "C:/src/misc/bible-text-files/"
 
-  let splitByNumbers = split(lookup, '[A-z]\|:')
+  let splitByNumbers = split(lookup, '[A-z]\|,')
   let verse = splitByNumbers[len(splitByNumbers)-1]
   let chapter = splitByNumbers[len(splitByNumbers)-2]
 
@@ -1318,13 +1357,40 @@ function BibleLookup(lookup)
     endif
   endfor
 
-  let command = ":tabnew " . substitute(fullDir, '', '', '')
+  let command = ":tabnew " . substitute(fullDir, '
+', '', '')
   execute command
-  execute "normal ggjjyo"
 
-  let currentClipboard = @+
+  execute "normal G"
 
-  let search = "/" . currentClipboard . " " . chapter
+  let search = "?Chapter \\<" . chapter . "\\>"
   execute search
-  execute "normal n"
+
+  let search = "/\\<" . verse . "\\>"
+  execute search
+
+  execute "normal f" . verse
+
 endfunction
+
+
+
+
+"Chapter 14
+"1 Now in the days of Am'raphel king of Shi'nar, Ar'ioch king of Ella'sar, Chedorlao'mer king of E'lam, and Ti'dal king of Goi'im, 2 these made war with Be'ra king of Sod'om, Bir'sha king of Gomor'rah, Shi'nab king of Ad'mah, Sheme'ber king of Zeboi'im, and the king of Be'la, that is, Zo'ar. 3 All of these joined forces at the Valley of Sid'dim, that is, the Salt Sea.
+
+
+
+
+
+
+
+
+
+" HACK: try applying conemu schemes at the end
+if g:isConEmu
+    hi Visual  ctermfg=black    ctermbg=darkmagenta
+    hi Search  ctermfg=black    ctermbg=darkcyan
+    hi Comment ctermfg=darkgray ctermbg=none cterm=none guifg=#75715e guibg=NONE gui=NONE
+endif
+
