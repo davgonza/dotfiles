@@ -102,3 +102,6 @@
 	conflictstyle = diff3
 [mergetool]
 	prompt = false
+[user]
+	name = Dave Gonzalez
+	email = dvgz@outlook.com

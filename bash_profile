@@ -1,6 +1,7 @@
 
 ## Colorize the ls output ##
 alias ls='ls -Glah'
+alias g='git'
  
 ## Use a long listing format ##
 alias ll='ls -la'
@@ -9,9 +10,16 @@ alias ll='ls -la'
 alias l.='ls -Gp -d .*'
 
 ## Git stuff
-alias gst='git status'
+alias gst='git status -u'
 alias test='echo "what"'
 alias gpo='git push origin master'
+
+## heroku stuff
+alias cn-heroku='heroku pg:psql -a minimal-todo-server'
+
+## random
+alias g-ui='cd ~/src/todolist-ui/todolist-ui'
+alias g-api='cd ~/src/todo-api/'
 
 ## Colorize the grep command output for ease of use (good for log files)##
 alias grep='grep --color=auto'
@@ -38,6 +46,10 @@ function load_color()
 
 test_fun () {
     echo "hi"
+}
+
+reload () {
+    source ~/.bash_profile
 }
 
 ## alias arc="/cygdrive/c/src/arc c:/src/arc

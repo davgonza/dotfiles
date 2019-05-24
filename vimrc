@@ -262,7 +262,9 @@ Plugin 'farmergreg/vim-lastplace'
 
 
 Plugin 'tpope/vim-dispatch'
-Plugin 'vim-syntastic/syntastic'
+if has("win32")
+    Plugin 'vim-syntastic/syntastic'
+endif
 Plugin 'ervandew/supertab'
 Plugin 'vim-scripts/L9'
 Plugin 'vim-scripts/FuzzyFinder'
@@ -279,7 +281,10 @@ Plugin 'epmatsw/ag.vim'
 if empty($CONEMUBUILD)
     Plugin 'OmniSharp/omnisharp-vim'
 endif
-Plugin 'liuchengxu/eleline.vim'
+
+if has("win32")
+    Plugin 'liuchengxu/eleline.vim'
+endif
 Plugin 'inkarkat/vim-spellcheck'
 Plugin 'inkarkat/vim-ingo-library'
 Plugin 'shinglyu/vim-codespell'
@@ -373,7 +378,7 @@ set completeopt-=preview
 
 
 
-if has('syntastic')
+if has('syntastic') && has('win32')
 	set statusline+=%#warningmsg#
 	set statusline+=%{SyntasticStatuslineFlag()}
 	set statusline+=%*
