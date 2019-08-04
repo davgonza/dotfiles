@@ -14,3 +14,5 @@ let completionengines = ['google', 'google-image', 'youtube']
 let mapleader = ","
 map <Leader>m :buffer<space>
 map <Leader>f lastUsedTab
+map <C-h> [[
+map <C-l> ]]
