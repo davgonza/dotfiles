@@ -19,69 +19,31 @@ capslock::esc
 
 
 
-LCtrl::LAlt
-RCtrl::ralt
+;LCtrl::LAlt
+;RCtrl::ralt
 
-LWin::Lshift
-appskey::rshift
+;LWin::Lshift
+;appskey::rshift
 
-LAlt::Lctrl
-RAlt::Rctrl
+;LAlt::Lctrl
+;RAlt::Rctrl
 
-*RShift::LWin
+;*RShift::LWin
 
-
-
-
-
-SC110::Send {F10}
-SC122::Send {F11}
-SC119::Send {F12}
-
-+SC110::Send {Shift down}{F10}{Shift up}
-+SC122::Send {Shift down}{F11}{Shift up}
-+SC119::Send {Shift down}{F12}{Shift up}
-
-
-
-; Recommended for performance
-#NoEnv
 
 ; Better and more reliable
-SendMode Input
+;SendMode Input
 
-LShift::
- if ( not GetKeyState("LButton" , "P") )
-  Click down
-return
-
-LShift Up::Click up
-
-
-
-
-
-
-
-;~Return::
-    ;IfWinActive, ahk_class LyncConversationWindowClass
-    ;{
-        ;clipBoardBefore := ClipboardAll
-
-        ;Send, ^a
-        ;Send, ^c
-
-        ;command := clipboard
-        ;FileAppend, %command%, C:\src\commands.txt
-
-
-
-         ;clipboard = %clipBoardBefore%
-        ;Send, {Return}
-    ;}
-
+;LShift::
+ ;if ( not GetKeyState("LButton" , "P") )
+  ;Click down
 ;return
 
+;LShift Up::Click up
+
+
+;; Recommended for performance
+;#NoEnv
 
 
 
@@ -91,9 +53,21 @@ LShift Up::Click up
 
 
 
-^SPACE::
-    Send, {ALT DOWN}{TAB}{ALT UP}
-return
+^!Backspace::Send       {Media_Play_Pause}
+^!Left::Send        {Media_Prev}
+^!Right::Send       {Media_Next}
+^!8::Send  {Volume_Mute}
+^!=::Send   {Volume_Up}
+^!-::Send   {Volume_Down}
+
+#y::
+DllCall("PowrProf\SetSuspendState", "int", 0, "int", 1, "int", 0)
+
+
+
+
+
+
 
 #.::WinClose, A
 #,::WinMinimize, A
