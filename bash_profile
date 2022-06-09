@@ -40,6 +40,15 @@ test_fun () {
     echo "hi"
 }
 
+htmlEscape () {
+    local s
+    s=${1//&/&amp;}
+    s=${s//</&lt;}
+    s=${s//>/&gt;}
+    s=${s//'"'/&quot;}
+    printf -- %s "$s"
+}
+
 ## alias arc="/cygdrive/c/src/arc c:/src/arc
 ## export PATH=$PATH:/cygdrive/c/src/arc
 ## Could not open input file: /cygdrive/c/src/arc/bin/../scripts/arcanist.php
